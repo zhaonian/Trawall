@@ -11,16 +11,8 @@ body .my-nav-bar {
         background: transparent;
 }
 
-body nav>div>ul>li {
-        margin: auto;
-}
-
-body nav>div>ul>li>a {
-        font-weight: 700;
-}
-
-body nav>div>div>a {
-        font-weight: 700;
+.icon-container > li > a {
+        text-decoration: none;
 }
 
 .header-logo {
@@ -37,4 +29,11 @@ body nav>div>div>a {
         padding-top: 5px;
         font-size: 18px;
         display: none;
+}
+
+.icon-container {
+        text-align: center;
+        display: inline-block;
+        width: 70px;
+        padding-top: 10px;
 }
