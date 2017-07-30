@@ -1,0 +1,84 @@
+body h1 {
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        font-size: 60px;
+        font-weight: 900;
+        color: blanchedalmond;
+}
+
+body .login-container {
+        text-align: center;
+        margin-top: 180px;
+}
+
+body .container {
+        width: 100%;
+}
+
+body .container .fa {
+        margin-top: 5px;
+        color: white;
+}
+
+body .input {
+        border: none;
+        border-radius: 3px;
+        margin-top: 5px;
+        padding: 10px 3px 10px 5px;
+        width: 65%;
+        font-size: 17px;
+}
+
+body .input:focus {
+        outline: none;
+        background: white
+}
+
+body .button {
+        border: none;
+        border-radius: 3px;
+        margin-top: 15px;
+        padding: 10px 3px 10px 5px;
+        width: 65%;
+        background-color: #58A842;
+        font-size: 20px;
+        color: white;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+#signup-btn {
+        background-color: white;
+        color: black;
+        border: none;
+        border-radius: 3px;
+        margin-top: 10px;
+        padding: 5px 10px 5px 10px;
+        font-weight: 500;
+}
+
+body .button:focus,
+#signup-btn:focus {
+        outline: none;
+}
+
+body .header {
+        display: inline;
+}
+
+body .forgot-pw-container {
+        text-align: center;
+        margin-top: 20px;
+}
+
+body .forgot-pw-container a {
+        color: whitesmoke;
+}
+
+body .forgot-pw-container a:focus,
+body .forgot-pw-container a:hover {
+        text-decoration: none;
+}
+
+body #register-btn {
+        display: none;
+        background-color: rgb(241, 173, 78);
+}

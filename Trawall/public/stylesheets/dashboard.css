@@ -1,0 +1,24 @@
+body {
+        background-image: url("../images/login.png");
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center; 
+        background-size: cover;
+}
+
+/*navigation bar*/
+body .my-nav-bar {
+        background: transparent;
+}
+
+body nav>div>ul>li>a {
+        font-weight: 700;
+}
+
+body nav>div>div>a {
+        font-weight: 700;
+}
+
+.header-logo {
+        font-size: 24px;
+}
