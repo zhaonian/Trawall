@@ -11,6 +11,10 @@ body .my-nav-bar {
         background: transparent;
 }
 
+body nav>div>ul>li {
+        margin: auto;
+}
+
 body nav>div>ul>li>a {
         font-weight: 700;
 }
@@ -21,4 +25,16 @@ body nav>div>div>a {
 
 .header-logo {
         font-size: 24px;
+}
+
+/* Header icon */
+#text-home,
+#text-message,
+#text-text-post,
+#text-pic-post,
+#text-vid-post,
+#text-my-profile {
+        padding-top: 5px;
+        font-size: 18px;
+        display: none;
 }
