@@ -62,7 +62,13 @@ body .my-nav-bar {
         background-color: white;
         margin-bottom: 10px;
         padding: 5px 0 10px 0;
-        border-radius: 4px;
+        border-radius: 4px; 
+        box-shadow: 0;
+        transition: box-shadow 0.3s;
+}
+
+.content-container:hover {
+        box-shadow: 0 0 18px #515151;;
 }
 
 .post-username {
@@ -96,6 +102,8 @@ body .my-nav-bar {
 .like-and-comment-row > .fa {
         float: right;
         font-size: 18px;
-        padding-left: 5px;
+        padding-left: 8px;
         font-weight: 600px;
+        color: rgb(143, 143, 143);
 }
+

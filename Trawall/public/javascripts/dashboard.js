@@ -11,7 +11,7 @@ $(function () {
                                                         <div class="col-xs-1">
                                                                 <a href='#'><img class='profile-pic' src="../images/3.jpeg" /></a>
                                                         </div>
-                                                        <div class="col-xs-5 content-container">
+                                                        <div class="col-xs-5 content-container paper">
                                                                 <span class="post-username">${data.posts[i].username}</span>
                                                                 <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.posts[i].location}</span>
                                                                 <div class="post-content">${data.posts[i].content}</div>

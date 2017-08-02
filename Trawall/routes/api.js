@@ -1,78 +1,131 @@
 var express = require('express');
 var session = require('client-sessions');
-// var pg = require('pg');
+var pg = require('pg');
+var bcrypt = require('bcrypt');
+const uuidv1 = require('uuid/v1');
 
 var router = express.Router();
 
-var connect = "postgres://luan:lzn19940830@localhost/trawall"; // explicitely put pw here?
+var connectionString = process.env.DATABASE_URL || "postgres://luan:postgresql-luan@localhost/trawall"; // explicitely put pw here?
 
 // User API
-// verify if the user in the db
-router.post('/user/login', function (req, res, next) {
-        // pg.connect(connect, function (err, client, done) {
-        //         if (err) {
-        //                 return console.error("error!", err);
-        //         }
-        //         client.query(`SELECT * FROM Trawall_Users;`, function (err, result) {
-        //                 if (err) {
-        //                         return console.error("err");
-        //                 }
-        //                 return res.json({ users: result });
-        //         });
-        //         done();
-        // });
-        // connection using created pool
-
-        // pool.connect(function (err, client, done) {
-        //         client.query(`SELECT * FROM Trawall_Users`, function (err, result) {
-        //                 if (err) {
-        //                         return console.error("err");
-        //                 }
-        //                 return res.json({ users: result });
-        //         }); done()
-        // })
-        // return res.json({ status: 200 });
-        req.session.username = "FrogLuan"; // dummy data
-        return res.redirect('http://localhost:3000/dashboard');
+// login
+router.post('/api/user/login', function (req, res, next) {
+        var email = req.body.email;
+        var password = req.body.password;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        return console.error("error!", err);
+                }
+                client.query(`SELECT username, hash FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
+                        if (err) {
+                                res.render('error', { message: "Database Exception" });
+                        }
+                        if (result.rowCount === 1) {
+                                if (!bcrypt.compareSync(req.body.password, result.rows[0].hash)) {
+                                        res.render('error', { message: "Invalid Password." });
+                                }
+                                req.session.email = email;
+                                req.session.username = result.rows[0].username;
+                                return res.redirect('/dashboard');
+                        } else {
+                                res.render('error', { message: "User with this email Not Found" });
+                        }
+                });
+                done();
+        });
 });
 
 // register
-router.post('/user/register', function (req, res, next) {
-        return res.redirect('http://localhost:3000/login');
+router.post('/api/user/register', function (req, res, next) {
+        var email = req.body.email;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        res.render('error', { message: "Database Exception" });
+                }
+                client.query(`SELECT FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
+                        if (err) {
+                                res.render('error', { message: "Database Exception" });
+                        }
+                        if (result.rowCount === 1) {
+                                res.render('error', { message: "User with same email already exists" });
+                        }
+                });
+                var uuid = uuidv1();
+                var hash = bcrypt.hashSync(req.body.password, 10);
+                client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', null);`, function (err, result) {
+                        if (err) {
+                                res.render('error', { message: "Database Exception" });
+                        }
+                        return res.redirect('/login');
+                });
+                done();
+        });
 });
 
-
+// forgot password
+// router.post('/api/user/forgotpassword', function (req, res, next) {
+//         var email = req.body.email;
+//         pg.connect(connectionString, function (err, client, done) {
+//                 if (err) {
+//                         res.render('error', { message: "Database Exception" });
+//                 }
+//                 client.query(`SELECT FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
+//                         if (err) {
+//                                 res.render('error', { message: "Database Exception" });
+//                         }
+//                         if (result.rowCount === 1) {
+//                                 res.render('error', { message: "User with same email already exists" });
+//                         }
+//                 });
+//                 var uuid = uuidv1();
+//                 var hash = bcrypt.hashSync(req.body.password, 10);
+//                 client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', null);`, function (err, result) {
+//                         if (err) {
+//                                 res.render('error', { message: "Database Exception" });
+//                         }
+//                         return res.redirect('/login');
+//                 });
+//                 done();
+//         });
+// });
 
 
 
 // Post API
 // posts with pagination
-router.get('/post/:offset?/:limit?', function(req, res, next) {
+router.get('/api/post/:offset?/:limit?', function (req, res, next) {
         return res.json({
                 posts: [
-                        {'id': '111',
-                        'username': 'FrogLuan',
-                        'profilePic': 'A',
-                        'format': '1',
-                        'content': 'Yosemite is beautiful! I love nature!',
-                        'location': 'Yosemite, CA',
-                        'tags': ['yosemite', 'camping', 'nature']},
+                        {
+                                'id': '111',
+                                'username': 'FrogLuan',
+                                'profilePic': 'A',
+                                'format': '1',
+                                'content': 'Yosemite is beautiful! I love nature!',
+                                'location': 'Yosemite, CA',
+                                'tags': ['yosemite', 'camping', 'nature']
+                        },
 
-                        {'id': '222',
-                        'username': 'Jenny',
-                        'profilePic': 'B',
-                        'format': '1',
-                        'content': 'Love the beach at Laguna!',
-                        'location': 'Laguna Beach, CA',
-                        'tags': ['laguna', 'beach', 'road-trip', 'nature']},
+                        {
+                                'id': '222',
+                                'username': 'Jenny',
+                                'profilePic': 'B',
+                                'format': '1',
+                                'content': 'Love the beach at Laguna!',
+                                'location': 'Laguna Beach, CA',
+                                'tags': ['laguna', 'beach', 'road-trip', 'nature']
+                        },
 
-                        {'id': '333',
-                        'username': 'AwesomeMe',
-                        'profilePic': 'C',
-                        'format': '1',
-                        'content': 'NYC or LA?',
-                        'location': 'New York, NY',
-                        'tags': ['empire-state', 'night-life', 'city']}
+                        {
+                                'id': '333',
+                                'username': 'AwesomeMe',
+                                'profilePic': 'C',
+                                'format': '1',
+                                'content': 'NYC or LA?',
+                                'location': 'New York, NY',
+                                'tags': ['empire-state', 'night-life', 'city']
+                        }
                 ]
         });
 });
@@ -89,16 +142,6 @@ router.get('/post/:offset?/:limit?', function(req, res, next) {
 
 
 
-
-
-
-
-
-
-
-
-// // pool shutdown
-// pool.end()
 
 
 
