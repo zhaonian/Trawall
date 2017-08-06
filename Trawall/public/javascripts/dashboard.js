@@ -4,7 +4,8 @@ $(function () {
                 url: `/api/post/0/3`,
                 contentType: "application/x-www-form-urlencoded",
                 success: function (data) {
-                        for (var i = 0; i < data.posts.length; i++) {
+                        console.log(data);
+                        for (var i = 0; i < data.posts.rows.length; i++) {
                            $("#posts-list").append(`
                                         <div class="row post-row">
                                                 <div class="container">
@@ -12,10 +13,10 @@ $(function () {
                                                                 <a href='#'><img class='profile-pic' src="../images/3.jpeg" /></a>
                                                         </div>
                                                         <div class="col-xs-5 content-container paper">
-                                                                <span class="post-username">${data.posts[i].username}</span>
-                                                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.posts[i].location}</span>
-                                                                <div class="post-content">${data.posts[i].content}</div>
-                                                                <div id="${data.posts[i].id}" class="post-tags"></div>
+                                                                <span class="post-username">${data.posts.rows[i].username}</span>
+                                                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.posts.rows[i].location}</span>
+                                                                <div class="post-content">${data.posts.rows[i].content}</div>
+                                                                <div id="${data.posts.rows[i].id}" class="post-tags"></div>
                                                                 <div class="like-and-comment-row">
                                                                         <span class="number-likes">46 likes</span>
                                                                         <i class="fa fa-heart-o" aria-hidden="true"></i>
@@ -25,8 +26,8 @@ $(function () {
                                                 </div>         
                                         </div>
                                 `);
-                                for (var j = 0; j < data.posts[i].tags.length; j++) {
-                                        $(".post-tags" + "#" + data.posts[i].id).append("#" + data.posts[i].tags[j] + " ");
+                                for (var j = 0; j < data.posts.rows[i].tags.length; j++) {
+                                        $(".post-tags" + "#" + data.posts.rows[i].id).append("#" + data.posts.rows[i].tags[j] + " ");
                                 }
                         }     
                 }

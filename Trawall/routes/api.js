@@ -11,8 +11,8 @@ var connectionString = process.env.DATABASE_URL || "postgres://luan:postgresql-l
 // User API
 // login
 router.post('/api/user/login', function (req, res, next) {
-        var email = req.body.email;
-        var password = req.body.password;
+        let email = req.body.email;
+        let password = req.body.password;
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
                         return console.error("error!", err);
@@ -38,7 +38,7 @@ router.post('/api/user/login', function (req, res, next) {
 
 // register
 router.post('/api/user/register', function (req, res, next) {
-        var email = req.body.email;
+        let email = req.body.email;
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
                         res.render('error', { message: "Database Exception" });
@@ -51,8 +51,8 @@ router.post('/api/user/register', function (req, res, next) {
                                 res.render('error', { message: "User with same email already exists" });
                         }
                 });
-                var uuid = uuidv1();
-                var hash = bcrypt.hashSync(req.body.password, 10);
+                let uuid = uuidv1();
+                let hash = bcrypt.hashSync(req.body.password, 10);
                 client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', null);`, function (err, result) {
                         if (err) {
                                 res.render('error', { message: "Database Exception" });
@@ -95,39 +95,64 @@ router.post('/api/user/register', function (req, res, next) {
 // Post API
 // posts with pagination
 router.get('/api/post/:offset?/:limit?', function (req, res, next) {
-        return res.json({
-                posts: [
-                        {
-                                'id': '111',
-                                'username': 'FrogLuan',
-                                'profilePic': 'A',
-                                'format': '1',
-                                'content': 'Yosemite is beautiful! I love nature!',
-                                'location': 'Yosemite, CA',
-                                'tags': ['yosemite', 'camping', 'nature']
-                        },
-
-                        {
-                                'id': '222',
-                                'username': 'Jenny',
-                                'profilePic': 'B',
-                                'format': '1',
-                                'content': 'Love the beach at Laguna!',
-                                'location': 'Laguna Beach, CA',
-                                'tags': ['laguna', 'beach', 'road-trip', 'nature']
-                        },
-
-                        {
-                                'id': '333',
-                                'username': 'AwesomeMe',
-                                'profilePic': 'C',
-                                'format': '1',
-                                'content': 'NYC or LA?',
-                                'location': 'New York, NY',
-                                'tags': ['empire-state', 'night-life', 'city']
-                        }
-                ]
+        var offset = req.params.offset;
+        var limit = req.params.limit;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        res.render('error', { message: "Database Exception" });
+                }
+                if (typeof limit === 'undefined' || typeof offset === 'undefined') { // does not specify pagination
+                        client.query(`SELECT * FROM posts;`, function (err, result) {
+                                if (err) {
+                                        return res.render('error', { message: " 1 Database Exception" });
+                                }
+                                return res.json({ posts: result });
+                        });
+                } else { // spcifies pagination
+                        client.query(`SELECT * FROM posts LIMIT ${limit} OFFSET ${offset};`, function (err, result) {
+                                if (err) {
+                                        return res.render('error', { message: " 2 Database Exception" });
+                                }
+                                return res.json({ posts: result });
+                        });
+                }
+                done();
         });
+
+
+        // return res.json({
+        //         posts: [
+        //                 {
+        //                         'id': '111',
+        //                         'username': 'FrogLuan',
+        //                         'profilePic': 'A',
+        //                         'format': '1',
+        //                         'content': 'Yosemite is beautiful! I love nature!',
+        //                         'location': 'Yosemite, CA',
+        //                         'tags': ['yosemite', 'camping', 'nature']
+        //                 },
+
+        //                 {
+        //                         'id': '222',
+        //                         'username': 'Jenny',
+        //                         'profilePic': 'B',
+        //                         'format': '1',
+        //                         'content': 'Love the beach at Laguna!',
+        //                         'location': 'Laguna Beach, CA',
+        //                         'tags': ['laguna', 'beach', 'road-trip', 'nature']
+        //                 },
+
+        //                 {
+        //                         'id': '333',
+        //                         'username': 'AwesomeMe',
+        //                         'profilePic': 'C',
+        //                         'format': '1',
+        //                         'content': 'NYC or LA?',
+        //                         'location': 'New York, NY',
+        //                         'tags': ['empire-state', 'night-life', 'city']
+        //                 }
+        //         ]
+        // });
 });
 
 
