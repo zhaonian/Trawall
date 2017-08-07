@@ -93,7 +93,7 @@ router.post('/api/user/register', function (req, res, next) {
 
 
 // Post API
-// posts with pagination
+// get posts with pagination
 router.get('/api/post/:offset?/:limit?', function (req, res, next) {
         var offset = req.params.offset;
         var limit = req.params.limit;
@@ -104,57 +104,64 @@ router.get('/api/post/:offset?/:limit?', function (req, res, next) {
                 if (typeof limit === 'undefined' || typeof offset === 'undefined') { // does not specify pagination
                         client.query(`SELECT * FROM posts;`, function (err, result) {
                                 if (err) {
-                                        return res.render('error', { message: " 1 Database Exception" });
+                                        return res.render('error', { message: "Database Exception" });
                                 }
                                 return res.json({ posts: result });
                         });
                 } else { // spcifies pagination
                         client.query(`SELECT * FROM posts LIMIT ${limit} OFFSET ${offset};`, function (err, result) {
                                 if (err) {
-                                        return res.render('error', { message: " 2 Database Exception" });
+                                        return res.render('error', { message: "Database Exception" });
                                 }
                                 return res.json({ posts: result });
                         });
                 }
                 done();
         });
-
-
-        // return res.json({
-        //         posts: [
-        //                 {
-        //                         'id': '111',
-        //                         'username': 'FrogLuan',
-        //                         'profilePic': 'A',
-        //                         'format': '1',
-        //                         'content': 'Yosemite is beautiful! I love nature!',
-        //                         'location': 'Yosemite, CA',
-        //                         'tags': ['yosemite', 'camping', 'nature']
-        //                 },
-
-        //                 {
-        //                         'id': '222',
-        //                         'username': 'Jenny',
-        //                         'profilePic': 'B',
-        //                         'format': '1',
-        //                         'content': 'Love the beach at Laguna!',
-        //                         'location': 'Laguna Beach, CA',
-        //                         'tags': ['laguna', 'beach', 'road-trip', 'nature']
-        //                 },
-
-        //                 {
-        //                         'id': '333',
-        //                         'username': 'AwesomeMe',
-        //                         'profilePic': 'C',
-        //                         'format': '1',
-        //                         'content': 'NYC or LA?',
-        //                         'location': 'New York, NY',
-        //                         'tags': ['empire-state', 'night-life', 'city']
-        //                 }
-        //         ]
-        // });
 });
 
+
+// new post
+router.post('/api/post/new', function (req, res, next) {
+        let id = uuidv1();
+        let username = req.session.username;
+        let format = 1;
+        let content = req.body.content;
+        let location = req.body.location;
+        let tags = req.body.tags;
+        console.log(id, username, content, location, tags, format);
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        res.render('error', { message: "Database Exception" });
+                }
+                client.query(`INSERT INTO Posts VALUES('${id}', '${username}', ${format}, '${content}', '${location}', '${tags}')  RETURNING *;`, function (err, result) {
+                        if (err) {
+                                return res.render('error', { message: "Database Exception" });
+                        }
+                        return res.json({ post: result });
+                });
+                done();
+        });
+});
+
+
+// delete a post
+router.delete('/api/post/delete/:postId', function (req, res, next) {
+        let postId = req.params.postId;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        res.render('error', { message: "Database Exception" });
+                }
+                console.log(postId);
+                client.query(`DELETE FROM Posts WHERE id = '${postId}';`, function (err, result) {
+                        if (err) {
+                                return res.render('error', { message: "Database Exception" });
+                        }
+                        return res.json({ post: result });
+                });
+                done();
+        });
+});
 
 
 

@@ -107,3 +107,100 @@ body .my-nav-bar {
         color: rgb(143, 143, 143);
 }
 
+/* The Modal (background) */
+.modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        overflow-y: auto;
+        max-height: 60%;
+}
+
+/* The Post Button */
+.post-btn {
+        background: rgb(92, 184, 92);
+        color: white;
+        font-size: 20px;
+        border: none;
+        border-radius: 5px;
+        padding: 3px 12px 3px 12px;
+        float: right;
+}
+
+.post-btn:focus {
+        outline: none;
+}
+
+/* Modal Text Area */
+#modal-text-area {
+        width: 100%;
+        display: block;
+        font-size: 16px;
+        margin: 20px 3px 20px 0;
+        border: none;
+        border-radius: 5px;
+        word-break: break-word;
+}
+
+
+#modal-location-area,
+#modal-tag-area {
+        width: 50%;
+        display: block;
+        font-size: 12px;
+        margin: 10px 10px 5px 10px;
+        border: none;
+        border-radius: 5px;
+        word-break: break-word;
+}
+
+#modal-text-area:focus,
+#modal-location-area:focus,
+#modal-tag-area:focus {
+        outline: none;
+}
+
+.delete-post-btn {
+        float: right;
+        font-size: 18px;
+}
+
+@-moz-keyframes spin { 
+        100% { 
+                -moz-transform: rotate(90deg); 
+        } 
+}
+@-webkit-keyframes spin { 
+        100% { 
+                -webkit-transform: rotate(90deg); 
+        } 
+}
+@keyframes spin { 
+        100% { 
+                -webkit-transform: rotate(90deg); 
+                transform:rotate(90deg); 
+        }
+} 
+
+.delete-post-btn:hover {
+        -webkit-animation:spin 200ms linear;
+        -moz-animation:spin 200ms linear;
+        animation:spin 200ms linear;
+}
