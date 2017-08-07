@@ -1,3 +1,5 @@
+var userId = $('body').attr('id');
+
 // get all posts when load the page
 $(function () {
         $.ajax({
@@ -20,8 +22,8 @@ $(function () {
                                                                 <div class="post-tags">${data.posts.rows[i].tags}</div>
                                                                 <div class="like-and-comment-row">
                                                                         <span class="number-likes">46 likes</span>
-                                                                        <i class="fa fa-heart-o" aria-hidden="true"></i>
-                                                                        <i class="fa fa-comment-o" aria-hidden="true"></i>
+                                                                        <i class="fa fa-heart" aria-hidden="true"></i>
+                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                                                 </div>
                                                         </div>
                                                 </div>         
@@ -148,8 +150,8 @@ $(function () {
                                                                 <div class="post-tags">${data.post.rows[0].tags}</div>
                                                                 <div class="like-and-comment-row">
                                                                         <span class="number-likes">46 likes</span>
-                                                                        <i class="fa fa-heart-o" aria-hidden="true"></i>
-                                                                        <i class="fa fa-comment-o" aria-hidden="true"></i>
+                                                                        <i class="fa fa-heart" aria-hidden="true"></i>
+                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                                                 </div>
                                                         </div>
                                                 </div>         
@@ -175,7 +177,6 @@ $(function () {
         // delete a post
         $('#posts-list').on('click', '.delete-post-btn', function (e) {
                 let postId = e.target.parentNode.parentNode.getAttribute('id');
-                console.log(postId);
                 $.ajax({
                         type: "DELETE",
                         url: `/api/post/delete/${postId}`,
@@ -184,4 +185,35 @@ $(function () {
                         }
                 });
         });
+});
+
+// user likes/unlikes a post
+$(function() {
+        // like a post
+        $('#posts-list').on('click', '.fa-heart', function(e) {
+                let postId = e.target.parentNode.parentNode.getAttribute('id');
+                $.ajax({
+                        type: "POST",
+                        url: `/api/${userId}/like/${postId}`,
+                        success: function (data) {
+                                $(`#${postId}`).find('.fa-heart').css({
+                                        "color": "red"
+                                });
+                        }
+                });
+        });
+
+        // // unlike a post
+        // $('#posts-list').on('click', '.fa-heart', function(e) {
+        //         let postId = e.target.parentNode.parentNode.getAttribute('id');
+        //         $.ajax({
+        //                 type: "POST",
+        //                 url: `/api/${userId}/unlike/${postId}`,
+        //                 success: function (data) {
+        //                         $(`#${postId}`).find('.fa-heart').css({
+        //                                 "color": "#cca2a3"
+        //                         });
+        //                 }
+        //         });
+        // });
 });

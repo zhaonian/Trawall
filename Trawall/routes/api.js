@@ -17,7 +17,7 @@ router.post('/api/user/login', function (req, res, next) {
                 if (err) {
                         return console.error("error!", err);
                 }
-                client.query(`SELECT username, hash FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
+                client.query(`SELECT id, email, username, hash FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
                         if (err) {
                                 res.render('error', { message: "Database Exception" });
                         }
@@ -25,6 +25,7 @@ router.post('/api/user/login', function (req, res, next) {
                                 if (!bcrypt.compareSync(req.body.password, result.rows[0].hash)) {
                                         res.render('error', { message: "Invalid Password." });
                                 }
+                                req.session.id = result.rows[0].id;
                                 req.session.email = email;
                                 req.session.username = result.rows[0].username;
                                 return res.redirect('/dashboard');
@@ -129,7 +130,6 @@ router.post('/api/post/new', function (req, res, next) {
         let content = req.body.content;
         let location = req.body.location;
         let tags = req.body.tags;
-        console.log(id, username, content, location, tags, format);
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
                         res.render('error', { message: "Database Exception" });
@@ -152,7 +152,6 @@ router.delete('/api/post/delete/:postId', function (req, res, next) {
                 if (err) {
                         res.render('error', { message: "Database Exception" });
                 }
-                console.log(postId);
                 client.query(`DELETE FROM Posts WHERE id = '${postId}';`, function (err, result) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception" });
@@ -164,8 +163,41 @@ router.delete('/api/post/delete/:postId', function (req, res, next) {
 });
 
 
+// like a post
+router.post('/api/:userId/like/:postId', function (req, res, next) {
+        let userId = req.params.userId;
+        let postId = req.params.postId;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        res.render('error', { message: "Database Exception" });
+                }
+                client.query(`INSERT INTO Likes VALUES('${userId}', '${postId}');`, function (err, result) {
+                        if (err) {
+                                return res.render('error', { message: "Database Exception" });
+                        }
+                        return res.json({ status: 200 });
+                });
+                done();
+        });
+});
 
-
+// unlike a post 
+// router.post('/api/:userId/unlike/:postId', function (req, res, next) {
+//         let userId = req.params.userId;
+//         let postId = req.params.postId;
+//         pg.connect(connectionString, function (err, client, done) {
+//                 if (err) {
+//                         res.render('error', { message: "Database Exception" });
+//                 }
+//                 client.query(`DELETE FROM Likes WHERE userId = '${userId}' AND postId = '${postId}';`, function (err, result) {
+//                         if (err) {
+//                                 return res.render('error', { message: "Database Exception" });
+//                         }
+//                         return res.json({ status: 200 });
+//                 });
+//                 done();
+//         });
+// });
 
 
 

@@ -204,3 +204,27 @@ body .my-nav-bar {
         -moz-animation:spin 200ms linear;
         animation:spin 200ms linear;
 }
+
+
+/* Heart */
+.like-and-comment-row > .fa-heart {
+        color: #cca2a3;
+        cursor: pointer;
+        -webkit-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+}
+
+.fa-heart:hover {
+        color: red;
+}
+
+.like-and-comment-row > .fa-comment {
+        color: #0086b3;
+        cursor: pointer;
+        -webkit-transition: all 0.3s ease-in-out;
+        transition: all 0.3s ease-in-out;
+}
+
+.fa-comment:hover {
+        color: #4dd2ff;
+}
