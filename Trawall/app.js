@@ -7,8 +7,6 @@ var bodyParser = require('body-parser');
 var session = require('client-sessions');
 var cors = require('cors');
 
-var login = require('./routes/login');
-var dashboard = require('./routes/dashboard');
 var api = require('./routes/api');
 var error = require('./routes/error');
 
@@ -38,8 +36,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', api);
-app.use('/login', login);
-app.use('/dashboard', dashboard);
 app.use('/error', error);
 
 // catch 404 and forward to error handler

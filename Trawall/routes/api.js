@@ -8,6 +8,8 @@ var router = express.Router();
 
 var connectionString = process.env.DATABASE_URL || "postgres://luan:postgresql-luan@localhost/trawall"; // explicitely put pw here?
 
+// TODO: Should I separate API files
+
 // User API
 // login
 router.post('/api/user/login', function (req, res, next) {
@@ -28,7 +30,10 @@ router.post('/api/user/login', function (req, res, next) {
                                 req.session.id = result.rows[0].id;
                                 req.session.email = email;
                                 req.session.username = result.rows[0].username;
-                                return res.redirect('/dashboard');
+                                res.render('dashboard', {
+                                        title: 'Trawall',
+                                        userId: req.session.id,
+                                });
                         } else {
                                 res.render('error', { message: "User with this email Not Found" });
                         }
@@ -58,7 +63,7 @@ router.post('/api/user/register', function (req, res, next) {
                         if (err) {
                                 res.render('error', { message: "Database Exception" });
                         }
-                        return res.redirect('/login');
+                        res.render('login', { title: 'Trawall' });
                 });
                 done();
         });
@@ -182,22 +187,22 @@ router.post('/api/:userId/like/:postId', function (req, res, next) {
 });
 
 // unlike a post 
-// router.post('/api/:userId/unlike/:postId', function (req, res, next) {
-//         let userId = req.params.userId;
-//         let postId = req.params.postId;
-//         pg.connect(connectionString, function (err, client, done) {
-//                 if (err) {
-//                         res.render('error', { message: "Database Exception" });
-//                 }
-//                 client.query(`DELETE FROM Likes WHERE userId = '${userId}' AND postId = '${postId}';`, function (err, result) {
-//                         if (err) {
-//                                 return res.render('error', { message: "Database Exception" });
-//                         }
-//                         return res.json({ status: 200 });
-//                 });
-//                 done();
-//         });
-// });
+router.post('/api/:userId/unlike/:postId', function (req, res, next) {
+        let userId = req.params.userId;
+        let postId = req.params.postId;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        res.render('error', { message: "Database Exception" });
+                }
+                client.query(`DELETE FROM Likes WHERE userId = '${userId}' AND postId = '${postId}';`, function (err, result) {
+                        if (err) {
+                                return res.render('error', { message: "Database Exception" });
+                        }
+                        return res.json({ status: 200 });
+                });
+                done();
+        });
+});
 
 
 

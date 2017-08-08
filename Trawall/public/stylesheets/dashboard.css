@@ -218,6 +218,10 @@ body .my-nav-bar {
         color: red;
 }
 
+.liked {
+        color: red !important;
+}
+
 .like-and-comment-row > .fa-comment {
         color: #0086b3;
         cursor: pointer;

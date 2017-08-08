@@ -188,32 +188,26 @@ $(function () {
 });
 
 // user likes/unlikes a post
-$(function() {
+$(function () {
         // like a post
-        $('#posts-list').on('click', '.fa-heart', function(e) {
+        $('#posts-list').on('click', '.fa-heart', function (e) {
                 let postId = e.target.parentNode.parentNode.getAttribute('id');
-                $.ajax({
-                        type: "POST",
-                        url: `/api/${userId}/like/${postId}`,
-                        success: function (data) {
-                                $(`#${postId}`).find('.fa-heart').css({
-                                        "color": "red"
-                                });
-                        }
-                });
+                if (!$(`#${postId}`).find('.fa-heart').hasClass('liked')) {
+                        $.ajax({
+                                type: "POST",
+                                url: `/api/${userId}/like/${postId}`,
+                                success: function (data) {
+                                        $(`#${postId}`).find('.fa-heart').addClass('liked');
+                                }
+                        });
+                } else {
+                        $.ajax({
+                                type: "POST",
+                                url: `/api/${userId}/unlike/${postId}`,
+                                success: function (data) {
+                                        $(`#${postId}`).find('.fa-heart').removeClass('liked');
+                                }
+                        });
+                }
         });
-
-        // // unlike a post
-        // $('#posts-list').on('click', '.fa-heart', function(e) {
-        //         let postId = e.target.parentNode.parentNode.getAttribute('id');
-        //         $.ajax({
-        //                 type: "POST",
-        //                 url: `/api/${userId}/unlike/${postId}`,
-        //                 success: function (data) {
-        //                         $(`#${postId}`).find('.fa-heart').css({
-        //                                 "color": "#cca2a3"
-        //                         });
-        //                 }
-        //         });
-        // });
 });
