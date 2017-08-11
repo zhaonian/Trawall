@@ -1,3 +1,4 @@
+var socket = io();
 var userId = $('body').attr('id');
 
 // get all posts when load the page
@@ -115,7 +116,7 @@ $(function () {
 
 // click header modal
 $(function () {
-        // post text content
+        // show text post dialogue
         $(".navbar-right").on('click', '#myBtn', function (e) {
                 $('#location-area').html("<textarea type='text' id='modal-location-area' placeholder='Where are you'></textarea>");
                 $('#tag-area').html("<textarea type='text' id='modal-tag-area' placeholder='Tag'></textarea>");
@@ -136,27 +137,7 @@ $(function () {
                                 tags: $('#modal-tag-area').val()
                         },
                         success: function (data) {
-                                $("#posts-list").append(`
-                                        <div class="row post-row">
-                                                <div class="container">
-                                                        <div class="col-xs-1">
-                                                                <a href='#'><img class='profile-pic' src="../images/3.jpeg" /></a>
-                                                        </div>
-                                                        <div id="${data.post.rows[0].id}" class="col-xs-5 content-container paper">
-                                                                <span class="post-username">${data.post.rows[0].username}</span>
-                                                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.post.rows[0].location}</span>
-                                                                <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
-                                                                <div class="post-content">${data.post.rows[0].content}</div>
-                                                                <div class="post-tags">${data.post.rows[0].tags}</div>
-                                                                <div class="like-and-comment-row">
-                                                                        <span class="number-likes">46 likes</span>
-                                                                        <i class="fa fa-heart" aria-hidden="true"></i>
-                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
-                                                                </div>
-                                                        </div>
-                                                </div>         
-                                        </div>
-                                `);
+                                socket.emit('NewPost', data);
                                 $('#myModal').hide();
                         }
                 });
@@ -210,4 +191,33 @@ $(function () {
                         });
                 }
         });
+});
+
+
+
+
+
+// socket response
+socket.on('NewPost', function (data) {
+        $("#posts-list").append(`
+                <div class="row post-row">
+                        <div class="container">
+                                <div class="col-xs-1">
+                                        <a href='#'><img class='profile-pic' src="../images/3.jpeg" /></a>
+                                </div>
+                                <div id="${data.post.rows[0].id}" class="col-xs-5 content-container paper">
+                                        <span class="post-username">${data.post.rows[0].username}</span>
+                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.post.rows[0].location}</span>
+                                        <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                        <div class="post-content">${data.post.rows[0].content}</div>
+                                        <div class="post-tags">${data.post.rows[0].tags}</div>
+                                        <div class="like-and-comment-row">
+                                                <span class="number-likes">46 likes</span>
+                                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                                <i class="fa fa-comment" aria-hidden="true"></i>
+                                        </div>
+                                </div>
+                        </div>         
+                </div>
+        `);
 });

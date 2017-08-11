@@ -206,7 +206,12 @@ router.post('/api/:userId/unlike/:postId', function (req, res, next) {
 
 
 
-
+// client.query(`SELECT postId FROM Likes WHERE userId = '${req.session.id}'`, function (err, result) {
+//         if (err) {
+//                 res.render('error', { message: "Database Exception" });
+//         }
+//         res.json({ likedPosts: result });
+// });
 
 
 
@@ -215,3 +220,5 @@ router.post('/api/:userId/unlike/:postId', function (req, res, next) {
 
 
 module.exports = router;
+
+
