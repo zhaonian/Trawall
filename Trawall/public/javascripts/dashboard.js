@@ -117,7 +117,7 @@ $(function () {
 // click header modal
 $(function () {
         // show text post dialogue
-        $(".navbar-right").on('click', '#myBtn', function (e) {
+        $(".navbar-right").on('click', '#textPostBtn', function (e) {
                 $('#location-area').html("<textarea type='text' id='modal-location-area' placeholder='Where are you'></textarea>");
                 $('#tag-area').html("<textarea type='text' id='modal-tag-area' placeholder='Tag'></textarea>");
                 $('#content').html("<textarea type='text' id='modal-text-area' placeholder='Your text here'></textarea>");
@@ -142,6 +142,17 @@ $(function () {
                         }
                 });
         });
+        
+        // show update profile dialogue
+        $(function () {
+                $(".navbar-right").on('click', '#profileBtn', function (e) {
+                        $('#update-username-area').html("<textarea type='text' id='modal-update-username' placeholder='Username'></textarea>");
+                        $('#myModal').css({ "display": "block" });
+                });
+        });
+
+
+
 
 
         // close the modal
@@ -192,6 +203,8 @@ $(function () {
                 }
         });
 });
+
+
 
 
 

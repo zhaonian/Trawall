@@ -159,7 +159,7 @@ body .my-nav-bar {
         word-break: break-word;
 }
 
-
+#modal-update-username,
 #modal-location-area,
 #modal-tag-area {
         width: 50%;
@@ -171,6 +171,7 @@ body .my-nav-bar {
         word-break: break-word;
 }
 
+#modal-update-username:focus,
 #modal-text-area:focus,
 #modal-location-area:focus,
 #modal-tag-area:focus {
