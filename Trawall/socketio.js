@@ -13,5 +13,5 @@ module.exports = {
                         //                 console.log('message: ' + msg);
                         //         });
                 });
-        },
+        }
 };

@@ -139,10 +139,6 @@ $(function () {
                                 content: $('#modal-text-area').val(),
                                 location: $('#modal-location-area').val(),
                                 tags: $('#modal-tag-area').val()
-                        },
-                        success: function (data) {
-                                socket.emit('NewPost', data);
-                                $('#myModal').hide();
                         }
                 });
         });
@@ -168,7 +164,6 @@ $(function () {
                                 username: $('#modal-update-username').val(),
                         },
                         success: function (data) {
-                                // socket.emit('NewPost', data);
                                 $('#myModal').hide();
                         }
                 });
@@ -239,12 +234,12 @@ socket.on('NewPost', function (data) {
                                 <div class="col-xs-1">
                                         <a href='#'><img class='profile-pic' src="../images/3.jpeg" /></a>
                                 </div>
-                                <div id="${data.post.rows[0].id}" class="col-xs-5 content-container paper">
-                                        <span class="post-username">${data.post.rows[0].username}</span>
-                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.post.rows[0].location}</span>
+                                <div id="${data.rows[0].id}" class="col-xs-5 content-container paper">
+                                        <span class="post-username">${data.rows[0].username}</span>
+                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
                                         <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
-                                        <div class="post-content">${data.post.rows[0].content}</div>
-                                        <div class="post-tags">${data.post.rows[0].tags}</div>
+                                        <div class="post-content">${data.rows[0].content}</div>
+                                        <div class="post-tags">${data.rows[0].tags}</div>
                                         <div class="like-and-comment-row">
                                                 <span class="number-likes">46 likes</span>
                                                 <i class="fa fa-heart" aria-hidden="true"></i>
@@ -254,4 +249,5 @@ socket.on('NewPost', function (data) {
                         </div>         
                 </div>
         `);
+        $('#myModal').hide();        
 });

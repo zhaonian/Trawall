@@ -4,12 +4,11 @@ const pg = require('pg');
 const bcrypt = require('bcrypt');
 const uuidv1 = require('uuid/v1');
 const nodemailer = require('nodemailer');
+var io = require('../socketio');
 
 var router = express.Router();
 
 const connectionString = process.env.DATABASE_URL || "postgres://luan:postgresql-luan@localhost/trawall"; // explicitely put pw here?
-
-// TODO: Should I separate API files
 
 // User API
 // login
@@ -26,7 +25,7 @@ router.post('/api/user/login', function (req, res, next) {
                         }
                         if (result.rowCount === 1) {
                                 if (!bcrypt.compareSync(req.body.password, result.rows[0].hash)) {
-                                        res.render('error', { message: "Invalid Password." });
+                                        return res.render('error', { message: "Invalid Password." });
                                 }
                                 req.session.id = result.rows[0].id;
                                 req.session.email = email;
@@ -195,7 +194,8 @@ router.post('/api/post/new', function (req, res, next) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception" });
                         }
-                        return res.json({ post: result });
+                        return io.getInstance().emit('NewPost', result);                        
+                        // return res.json({ post: result });
                 });
                 done();
         });
