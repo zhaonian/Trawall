@@ -9,6 +9,8 @@ var cors = require('cors');
 
 var api = require('./routes/api');
 var login = require('./routes/login');
+var dashboard = require('./routes/dashboard');
+var passwordReset = require('./routes/passwordReset');
 var error = require('./routes/error');
 
 var app = express();
@@ -39,7 +41,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', api);
 app.use('/error', error);
 app.use('/login', login);
-
+app.use('/dashboard', dashboard);
+app.use('/passwordReset', passwordReset);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
         var err = new Error('Not Found');

@@ -82,3 +82,8 @@ body #register-btn {
         display: none;
         background-color: rgb(241, 173, 78);
 }
+
+body #reset-btn {
+        display: none;
+        background-color: rgb(191, 94, 67);      
+}

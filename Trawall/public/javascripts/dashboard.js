@@ -118,15 +118,19 @@ $(function () {
 $(function () {
         // show text post dialogue
         $(".navbar-right").on('click', '#textPostBtn', function (e) {
-                $('#location-area').html("<textarea type='text' id='modal-location-area' placeholder='Where are you'></textarea>");
-                $('#tag-area').html("<textarea type='text' id='modal-tag-area' placeholder='Tag'></textarea>");
-                $('#content').html("<textarea type='text' id='modal-text-area' placeholder='Your text here'></textarea>");
-                $('#post-btn-container').html("<button id='text-post-btn' class='post-btn'>Post</button>");
+                $('.modal-content').html(`
+                        <div id="location-area"><textarea type='text' id='modal-location-area' placeholder='Where are you'></textarea></div>
+                        <div id="tag-area"><textarea type='text' id='modal-tag-area' placeholder='Tag'></textarea></div>
+                        <hr/>
+                        <div id="content"><textarea type='text' id='modal-text-area' placeholder='Your text here'></textarea></div>
+                        <hr/>
+                        <div id="post-btn-container"><button id='text-post-btn' class='post-btn'>Post</button></div>
+                        `);
                 $('#myModal').css({ "display": "block" });
         });
 
         // click on post button for text content
-        $('#post-btn-container').on('click', '#text-post-btn', function () {
+        $('.modal-content').on('click', '#text-post-btn', function () {
                 $.ajax({
                         type: "POST",
                         url: `/api/post/new`,
@@ -142,15 +146,35 @@ $(function () {
                         }
                 });
         });
-        
+
         // show update profile dialogue
-        $(function () {
-                $(".navbar-right").on('click', '#profileBtn', function (e) {
-                        $('#update-username-area').html("<textarea type='text' id='modal-update-username' placeholder='Username'></textarea>");
-                        $('#myModal').css({ "display": "block" });
-                });
+        // TODO: add uploading profilePic option
+        $(".navbar-right").on('click', '#profileBtn', function (e) {
+                $('.modal-content').html(`
+                        <div id=‘update-username-area’><textarea type='text' id='modal-update-username' placeholder='Username'></textarea></div>
+                        <div id="post-btn-container"><button id='update-profile-btn' class='post-btn'>Update</button></div>
+                `);
+                $('#myModal').css({ "display": "block" });
         });
 
+        // click on update button for text content
+        // TODO: implement this
+        $('.modal-content').on('click', '#update-profile-btn', function () {
+                $.ajax({
+                        type: "POST",
+                        url: `/api/post/new`,
+                        contentType: "application/x-www-form-urlencoded",
+                        data: {
+                                content: $('#modal-text-area').val(),
+                                location: $('#modal-location-area').val(),
+                                tags: $('#modal-tag-area').val()
+                        },
+                        success: function (data) {
+                                // socket.emit('NewPost', data);
+                                $('#myModal').hide();
+                        }
+                });
+        });
 
 
 

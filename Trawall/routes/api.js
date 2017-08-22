@@ -1,12 +1,13 @@
-var express = require('express');
-var session = require('client-sessions');
-var pg = require('pg');
-var bcrypt = require('bcrypt');
+const express = require('express');
+const session = require('client-sessions');
+const pg = require('pg');
+const bcrypt = require('bcrypt');
 const uuidv1 = require('uuid/v1');
+const nodemailer = require('nodemailer');
 
 var router = express.Router();
 
-var connectionString = process.env.DATABASE_URL || "postgres://luan:postgresql-luan@localhost/trawall"; // explicitely put pw here?
+const connectionString = process.env.DATABASE_URL || "postgres://luan:postgresql-luan@localhost/trawall"; // explicitely put pw here?
 
 // TODO: Should I separate API files
 
@@ -21,7 +22,7 @@ router.post('/api/user/login', function (req, res, next) {
                 }
                 client.query(`SELECT id, email, username, hash FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
                         if (err) {
-                                res.render('error', { message: "Database Exception" });
+                                return res.render('error', { message: "Database Exception" });
                         }
                         if (result.rowCount === 1) {
                                 if (!bcrypt.compareSync(req.body.password, result.rows[0].hash)) {
@@ -30,12 +31,9 @@ router.post('/api/user/login', function (req, res, next) {
                                 req.session.id = result.rows[0].id;
                                 req.session.email = email;
                                 req.session.username = result.rows[0].username;
-                                res.render('dashboard', {
-                                        title: 'Trawall',
-                                        userId: req.session.id,
-                                });
+                                return res.redirect('/dashboard')
                         } else {
-                                res.render('error', { message: "User with this email Not Found" });
+                                return res.render('error', { message: "User with this email Not Found" });
                         }
                 });
                 done();
@@ -47,55 +45,89 @@ router.post('/api/user/register', function (req, res, next) {
         let email = req.body.email;
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
-                        res.render('error', { message: "Database Exception" });
+                        return res.render('error', { message: "Database Exception" });
                 }
                 client.query(`SELECT FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
                         if (err) {
-                                res.render('error', { message: "Database Exception" });
+                                return res.render('error', { message: "Database Exception" });
                         }
                         if (result.rowCount === 1) {
-                                res.render('error', { message: "User with same email already exists" });
+                                return res.render('error', { message: "User with same email already exists" });
                         }
                 });
                 let uuid = uuidv1();
                 let hash = bcrypt.hashSync(req.body.password, 10);
-                client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', null);`, function (err, result) {
+                client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', null, null, null);`, function (err, result) {
                         if (err) {
-                                res.render('error', { message: "Database Exception" });
+                                return res.render('error', { message: "Database Exception" });
                         }
-                        res.render('login', { title: 'Trawall' });
+                        req.session.id = uuid;
+                        return res.redirect('/dashboard')
                 });
                 done();
         });
 });
 
-// forgot password
-// router.post('/api/user/forgotpassword', function (req, res, next) {
-//         var email = req.body.email;
-//         pg.connect(connectionString, function (err, client, done) {
-//                 if (err) {
-//                         res.render('error', { message: "Database Exception" });
-//                 }
-//                 client.query(`SELECT FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
-//                         if (err) {
-//                                 res.render('error', { message: "Database Exception" });
-//                         }
-//                         if (result.rowCount === 1) {
-//                                 res.render('error', { message: "User with same email already exists" });
-//                         }
-//                 });
-//                 var uuid = uuidv1();
-//                 var hash = bcrypt.hashSync(req.body.password, 10);
-//                 client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', null);`, function (err, result) {
-//                         if (err) {
-//                                 res.render('error', { message: "Database Exception" });
-//                         }
-//                         return res.redirect('/login');
-//                 });
-//                 done();
-//         });
-// });
+// send reset password link to user email
+router.post('/api/user/send-reset-link', function (req, res, next) {
+        let email = req.body.email;
+        let recoveryToken = uuidv1();
+        var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                        user: 'frogluan@gmail.com',
+                        pass: 'l,z,n.940830'
+                }
+        });
 
+        var mailOptions = {
+                from: 'Trawall Support Team',
+                to: email,
+                subject: 'Password Reset',
+                html: `<p>Click <a href="http://localhost:3000/passwordReset/${email}/reset-password/${recoveryToken}">here</a> to reset your password</p>
+                        <p>This link will expire in 30 minutes</p>`                
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                        console.log(error);
+                } else {
+                        console.log('Email sent: ' + info.response);
+                }
+        });
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        return res.render('error', { message: "Database Exception" });
+                }
+                client.query(`UPDATE Trawall_Users SET recoveryToken = '${recoveryToken}' WHERE email = '${email}';`, function (err, result) {
+                        if (err) {
+                                return res.render('error', { message: "Database Exception" });
+                        }
+                });
+                done();
+        });
+        return res.redirect('/login');
+});
+
+
+// reset password
+router.post('/api/user/resetPassword', function (req, res, next) {
+        let email = req.body.email;
+        let password = req.body.password;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        return res.render('error', { message: "Database Exception" });
+                }
+                let hash = bcrypt.hashSync(password, 10);
+                client.query(`UPDATE Trawall_Users SET hash = '${hash}', recoveryToken = null WHERE email = '${email}';`, function (err, result) {
+                        if (err) {
+                               return res.render('error', { message: "Database Exception" });
+                        }
+                        return res.redirect('/login');
+                });
+                done();
+        });
+});
 
 
 // Post API
@@ -105,7 +137,7 @@ router.get('/api/post/:offset?/:limit?', function (req, res, next) {
         var limit = req.params.limit;
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
-                        res.render('error', { message: "Database Exception" });
+                        return res.render('error', { message: "Database Exception" });
                 }
                 if (typeof limit === 'undefined' || typeof offset === 'undefined') { // does not specify pagination
                         client.query(`SELECT * FROM posts;`, function (err, result) {
@@ -203,15 +235,6 @@ router.post('/api/:userId/unlike/:postId', function (req, res, next) {
                 done();
         });
 });
-
-
-
-// client.query(`SELECT postId FROM Likes WHERE userId = '${req.session.id}'`, function (err, result) {
-//         if (err) {
-//                 res.render('error', { message: "Database Exception" });
-//         }
-//         res.json({ likedPosts: result });
-// });
 
 
 

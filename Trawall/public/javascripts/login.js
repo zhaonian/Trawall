@@ -65,10 +65,22 @@ $(function () {
 $(function () {
         $('#login-container-id').on('click', '#signup-btn', function (e) {
                 $('#login-btn').fadeOut('fast', function () {
+                        $('#password').css('visibility', 'visible');                        
+                        $('#reset-btn').hide();
                         $('#login-form').attr('action', '/api/user/register');
                         $('#register-btn').fadeIn();
-                        // how to get some json data back so that I can show some notification like register success
-                        // cant use ajax because it exposes the data
+                });
+        });
+});
+
+// replace login button with resetPassword button
+$(function () {
+        $('#login-container-id').on('click', '#reset-pw-link', function (e) {
+                $('#login-btn').fadeOut('fast', function () {
+                        $('#password').css('visibility', 'hidden');
+                        $('#register-btn').hide();
+                        $('#login-form').attr('action', '/api/user/send-reset-link');
+                        $('#reset-btn').fadeIn();
                 });
         });
 });
