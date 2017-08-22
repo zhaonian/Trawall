@@ -130,6 +130,26 @@ router.post('/api/user/resetPassword', function (req, res, next) {
 });
 
 
+// update username
+router.post('/api/user/username/update', function (req, res, next) {
+        let id = req.body.id;
+        let username = req.body.username;
+        console.log(username, "  -  ", id);
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        return res.render('error', { message: "Database Exception" });
+                }
+                client.query(`UPDATE Trawall_Users SET username = '${username}' WHERE id = '${id}';`, function (err, result) {
+                        if (err) {
+                               return res.render('error', { message: "Database Exception" });
+                        }
+                        return res.json({status: 200});
+                });
+                done();
+        });
+});
+
+
 // Post API
 // get posts with pagination
 router.get('/api/post/:offset?/:limit?', function (req, res, next) {

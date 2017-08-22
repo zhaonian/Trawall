@@ -158,16 +158,14 @@ $(function () {
         });
 
         // click on update button for text content
-        // TODO: implement this
         $('.modal-content').on('click', '#update-profile-btn', function () {
                 $.ajax({
                         type: "POST",
-                        url: `/api/post/new`,
+                        url: `/api/user/username/update`,
                         contentType: "application/x-www-form-urlencoded",
                         data: {
-                                content: $('#modal-text-area').val(),
-                                location: $('#modal-location-area').val(),
-                                tags: $('#modal-tag-area').val()
+                                id: $('body').attr('id'),
+                                username: $('#modal-update-username').val(),
                         },
                         success: function (data) {
                                 // socket.emit('NewPost', data);
@@ -175,7 +173,6 @@ $(function () {
                         }
                 });
         });
-
 
 
 
