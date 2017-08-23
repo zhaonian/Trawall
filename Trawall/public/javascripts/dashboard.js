@@ -14,7 +14,7 @@ $(function () {
                                         <div class="row post-row">
                                                 <div class="container">
                                                         <div class="col-xs-1">
-                                                                <a href='#'><img class='profile-pic' src="../images/3.jpeg" /></a>
+                                                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
                                                         </div>
                                                         <div id="${data.posts.rows[i].id}" class="col-xs-5 content-container paper">
                                                                 <span class="post-username">${data.posts.rows[i].username}</span>
@@ -137,6 +137,7 @@ $(function () {
                         url: `/api/post/new`,
                         contentType: "application/x-www-form-urlencoded",
                         data: {
+                                username: username,
                                 content: $('#modal-text-area').val(),
                                 location: $('#modal-location-area').val(),
                                 tags: $('#modal-tag-area').val()
@@ -154,7 +155,7 @@ $(function () {
                 $('#myModal').css({ "display": "block" });
         });
 
-        // click on update button for text content
+        // click on update button for profile update
         $('.modal-content').on('click', '#update-profile-btn', function () {
                 $.ajax({
                         type: "POST",
@@ -169,6 +170,27 @@ $(function () {
                         }
                 });
         });
+
+        // TODO: fix/choose file dialogue does not pop up in modal
+        // show picture post doialogue
+        $(".navbar-right").on('click', '#imagePostBtn', function (e) {
+                $('.modal-content').html(`
+                        <form method="POST" action="/api/post/imgPost" enctype="multipart/form-data" >
+                                <input type="file" name="imagePost">
+                                <input id='image-post-submit' type="submit" value="Post">
+                        </form>
+                `);
+                $('#myModal').css({ "display": "block" });
+        });
+
+
+
+
+
+
+
+
+
 
 
 
@@ -233,7 +255,7 @@ socket.on('NewPost', function (data) {
                 <div class="row post-row">
                         <div class="container">
                                 <div class="col-xs-1">
-                                        <a href='#'><img class='profile-pic' src="../images/3.jpeg" /></a>
+                                        <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
                                 </div>
                                 <div id="${data.rows[0].id}" class="col-xs-5 content-container paper">
                                         <span class="post-username">${data.rows[0].username}</span>

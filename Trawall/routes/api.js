@@ -4,7 +4,8 @@ const pg = require('pg');
 const bcrypt = require('bcrypt');
 const uuidv1 = require('uuid/v1');
 const nodemailer = require('nodemailer');
-var io = require('../socketio');
+const multer = require('multer');
+const io = require('../socketio');
 
 var router = express.Router();
 
@@ -84,7 +85,7 @@ router.post('/api/user/send-reset-link', function (req, res, next) {
                 to: email,
                 subject: 'Password Reset',
                 html: `<p>Click <a href="http://localhost:3000/passwordReset/${email}/reset-password/${recoveryToken}">here</a> to reset your password</p>
-                        <p>This link will expire in 30 minutes</p>`                
+                        <p>This link will expire in 30 minutes</p>`
         };
 
         transporter.sendMail(mailOptions, function (error, info) {
@@ -120,7 +121,7 @@ router.post('/api/user/resetPassword', function (req, res, next) {
                 let hash = bcrypt.hashSync(password, 10);
                 client.query(`UPDATE Trawall_Users SET hash = '${hash}', recoveryToken = null WHERE email = '${email}';`, function (err, result) {
                         if (err) {
-                               return res.render('error', { message: "Database Exception" });
+                                return res.render('error', { message: "Database Exception" });
                         }
                         return res.redirect('/login');
                 });
@@ -140,9 +141,9 @@ router.post('/api/user/username/update', function (req, res, next) {
                 }
                 client.query(`UPDATE Trawall_Users SET username = '${username}' WHERE id = '${id}';`, function (err, result) {
                         if (err) {
-                               return res.render('error', { message: "Database Exception" });
+                                return res.render('error', { message: "Database Exception" });
                         }
-                        return res.json({status: 200});
+                        return res.json({ status: 200 });
                 });
                 done();
         });
@@ -181,7 +182,7 @@ router.get('/api/post/:offset?/:limit?', function (req, res, next) {
 // new post
 router.post('/api/post/new', function (req, res, next) {
         let id = uuidv1();
-        let username = req.session.username;
+        let username = req.body.username;
         let format = 1;
         let content = req.body.content;
         let location = req.body.location;
@@ -194,7 +195,7 @@ router.post('/api/post/new', function (req, res, next) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception" });
                         }
-                        return io.getInstance().emit('NewPost', result);                        
+                        return io.getInstance().emit('NewPost', result);
                         // return res.json({ post: result });
                 });
                 done();
@@ -214,7 +215,7 @@ router.delete('/api/post/delete/:postId', function (req, res, next) {
                                 return res.render('error', { message: "Database Exception" });
                         }
                         // console.log(result);
-                        return io.getInstance().emit('DeletePost', result);                                                
+                        return io.getInstance().emit('DeletePost', result);
                         // return res.json({ post: result });
                 });
                 done();
@@ -259,6 +260,26 @@ router.post('/api/:userId/unlike/:postId', function (req, res, next) {
 });
 
 
+// upload files (image and video)
+var storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+                cb(null, 'uploads/images/')
+        },
+        filename: function (req, file, cb) {
+                cb(null, file.fieldname + '.jpeg')
+        }
+})
+
+var upload = multer({ storage: storage }).single('imagePost');
+
+router.post('/api/post/imgPost', function (req, res, next) {
+        upload(req, res, function (err) {
+                if (err) {
+                        return res.render('error', {message: "upload failed"});
+                }
+                return res.json({status: 200});
+        })
+});
 
 
 
