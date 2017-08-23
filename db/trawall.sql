@@ -1,33 +1,25 @@
-create table trawall_users
+CREATE TABLE likes
 (
-	id varchar(36) not null
-		constraint trawall_users_pkey
-			primary key,
-	email varchar(64) not null,
-	hash varchar(128) not null,
-	username varchar(32),
-	profilepic varchar(128)
-)
-;
-
-create unique index trawall_users_id_uindex
-	on trawall_users (id)
-;
-
-create table posts
+    userid VARCHAR(36) NOT NULL,
+    postid VARCHAR(36) PRIMARY KEY NOT NULL
+);
+CREATE TABLE posts
 (
-	id varchar(36) not null
-		constraint posts_pkey
-			primary key,
-	username varchar(32) not null,
-	format integer,
-	content text,
-	location text,
-	tags varchar(16)
-)
-;
-
-create unique index posts_id_uindex
-	on posts (id)
-;
-
+    id VARCHAR(36) PRIMARY KEY NOT NULL,
+    username VARCHAR(32) NOT NULL,
+    format INTEGER,
+    content TEXT,
+    location TEXT,
+    tags VARCHAR(16)
+);
+CREATE UNIQUE INDEX posts_id_uindex ON posts (id);
+CREATE TABLE trawall_users
+(
+    id VARCHAR(36) PRIMARY KEY NOT NULL,
+    email VARCHAR(64) NOT NULL,
+    hash VARCHAR(128) NOT NULL,
+    username VARCHAR(32),
+    profilepic VARCHAR(128),
+    recoverytoken VARCHAR(128)
+);
+CREATE UNIQUE INDEX trawall_users_id_uindex ON trawall_users (id);
