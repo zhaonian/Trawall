@@ -191,7 +191,7 @@ router.post('/api/post/new', function (req, res, next) {
                 if (err) {
                         res.render('error', { message: "Database Exception" });
                 }
-                client.query(`INSERT INTO Posts VALUES('${id}', '${username}', ${format}, '${content}', '${location}', '${tags}')  RETURNING *;`, function (err, result) {
+                client.query(`INSERT INTO Posts VALUES('${id}', '${username}', ${format}, '${content}', '${location}', '${tags}', null)  RETURNING *;`, function (err, result) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception" });
                         }
@@ -263,7 +263,7 @@ router.post('/api/:userId/unlike/:postId', function (req, res, next) {
 // upload files (image and video)
 var storage = multer.diskStorage({
         destination: function (req, file, cb) {
-                cb(null, 'uploads/images/')
+                cb(null, 'public/images/avatars/')
         },
         filename: function (req, file, cb) {
                 cb(null, file.fieldname + '.jpeg')
@@ -277,8 +277,29 @@ router.post('/api/post/imgPost', function (req, res, next) {
                 if (err) {
                         return res.render('error', {message: "upload failed"});
                 }
-                return res.json({status: 200});
-        })
+                console.log('file upload success');
+
+                let filePath = req.file.path.substring(7);
+                let id = uuidv1();
+                let username = req.body.username;
+                let format = 2;
+                let content = req.body.content;
+                let location = req.body.location;
+                let tags = req.body.tags;
+                pg.connect(connectionString, function (err, client, done) {
+                        if (err) {
+                                res.render('error', { message: "Database Exception" });
+                        }
+                        client.query(`INSERT INTO Posts VALUES('${id}', '${username}', ${format}, '${content}', '${location}', '${tags}', '${filePath}')  RETURNING *;`, function (err, result) {
+                                if (err) {
+                                        return res.render('error', { message: "Database Exception" });
+                                }
+                                return io.getInstance().emit('NewImgPost', result);
+                        });
+                        done();
+                });
+        });
+
 });
 
 

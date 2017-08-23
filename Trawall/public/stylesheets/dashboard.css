@@ -90,6 +90,12 @@ body .my-nav-bar {
         color: rgb(143, 143, 143);
 }
 
+.post-img {
+        height: 50% !important;
+        width: 50% !important;
+        padding-bottom: 10px;
+}
+
 .number-likes {
         color: rgb(143, 143, 143);
         font-weight: 800px;
@@ -232,4 +238,11 @@ body .my-nav-bar {
 
 .fa-comment:hover {
         color: #4dd2ff;
+}
+
+
+/* file upload button */
+#file-upload[type=file] {
+        cursor: pointer;
+        padding: 10px;
 }

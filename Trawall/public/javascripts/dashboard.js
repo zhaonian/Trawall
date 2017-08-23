@@ -119,19 +119,26 @@ $(function () {
 $(function () {
         // show text post dialogue
         $(".navbar-right").on('click', '#textPostBtn', function (e) {
-                $('.modal-content').html(`
-                        <div id="location-area"><textarea type='text' id='modal-location-area' placeholder='Where are you'></textarea></div>
-                        <div id="tag-area"><textarea type='text' id='modal-tag-area' placeholder='Tag'></textarea></div>
-                        <hr/>
-                        <div id="content"><textarea type='text' id='modal-text-area' placeholder='Your text here'></textarea></div>
-                        <hr/>
-                        <div id="post-btn-container"><button id='text-post-btn' class='post-btn'>Post</button></div>
-                        `);
-                $('#myModal').css({ "display": "block" });
+                $('#posts-list').prepend(`
+                        <div class="row post-row">
+                                <div class="container">
+                                        <div class="col-xs-1">
+                                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                        </div>
+                                        <div id="" class="col-xs-5 content-container paper">
+                                                <div id="location-area"><textarea type='text' id='modal-location-area' placeholder='Where are you'></textarea></div>
+                                                <div id="tag-area"><textarea type='text' id='modal-tag-area' placeholder='Tag'></textarea></div>
+                                                <hr/>
+                                                <div id="content"><textarea type='text' id='modal-text-area' placeholder='Your text here'></textarea></div>
+                                                <hr/>
+                                                <div id="post-btn-container"><button id='text-post-btn' class='post-btn'>Post</button></div>
+                                        </div>
+                                </div>
+                        </div>`
+                );
         });
 
-        // click on post button for text content
-        $('.modal-content').on('click', '#text-post-btn', function () {
+        $('#posts-list').on('click', '#text-post-btn', function () {
                 $.ajax({
                         type: "POST",
                         url: `/api/post/new`,
@@ -144,6 +151,53 @@ $(function () {
                         }
                 });
         });
+
+
+        // TODO: fix/choose file dialogue does not pop up in modal
+        // $(".navbar-right").on('click', '#imagePostBtn', function (e) {
+        //         $('.modal-content').html(`
+        //                 <form method="POST" action="/api/post/imgPost" enctype="multipart/form-data" >
+        //                         <input type="file" name="imagePost">
+        //                         <input id='image-post-submit' type="submit" value="Post">
+        //                 </form>
+        //         `);
+        //         $('#myModal').css({ "display": "block" });
+        // });
+
+        // show picture post doialogue
+        $(".navbar-right").on('click', '#imagePostBtn', function (e) {
+                $('#posts-list').prepend(`
+                        <div class="row post-row">
+                                <div class="container">
+                                        <div class="col-xs-1">
+                                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                        </div>
+                                        <div id="" class="col-xs-5 content-container paper">
+                                                <form method="POST" action="/api/post/imgPost" enctype="multipart/form-data" >
+                                                        <input type="hidden" name="username" value=${username}>
+                                                        <div id="location-area"><textarea type='text' id='modal-location-area' name='location' placeholder='Where are you'></textarea></div>
+                                                        <div id="tag-area"><textarea type='text' id='modal-tag-area' name='tags' placeholder='Tag'></textarea></div>
+                                                        <hr/>
+                                                        <div id="content"><textarea type='text' id='modal-text-area' name='content' placeholder='Your text here'></textarea></div>
+                                                        <input id='file-upload' type="file" name="imagePost">
+                                                        <input id='image-post-submit' class='post-btn' type="submit" value="Post">
+                                                </form>
+                                        </div>
+                                </div>
+                        </div>`
+                );
+        });
+
+
+
+
+
+
+
+
+
+
+
 
         // show update profile dialogue
         // TODO: add uploading profilePic option
@@ -170,29 +224,6 @@ $(function () {
                         }
                 });
         });
-
-        // TODO: fix/choose file dialogue does not pop up in modal
-        // show picture post doialogue
-        $(".navbar-right").on('click', '#imagePostBtn', function (e) {
-                $('.modal-content').html(`
-                        <form method="POST" action="/api/post/imgPost" enctype="multipart/form-data" >
-                                <input type="file" name="imagePost">
-                                <input id='image-post-submit' type="submit" value="Post">
-                        </form>
-                `);
-                $('#myModal').css({ "display": "block" });
-        });
-
-
-
-
-
-
-
-
-
-
-
 
         // close the modal
         $('#myModal').on('click', function (e) {
@@ -272,9 +303,36 @@ socket.on('NewPost', function (data) {
                         </div>
                 </div>
         `);
-        $('#myModal').hide();
+        $('#posts-list').find('div').first().remove();
 });
 
 socket.on('DeletePost', function (data) {
         $(`#${data.rows[0].id}`).parent().parent().remove();
+});
+
+socket.on('NewImgPost', function (data) {
+        console.log(data.rows[0]);
+        $("#posts-list").append(`
+                <div class="row post-row">
+                        <div class="container">
+                                <div class="col-xs-1">
+                                        <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                </div>
+                                <div id="${data.rows[0].id}" class="col-xs-5 content-container paper">
+                                        <span class="post-username">${data.rows[0].username}</span>
+                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
+                                        <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                        <div class="post-content">${data.rows[0].content}</div>
+                                        <div class="post-tags">${data.rows[0].tags}</div>
+                                        <img class="post-img" src='${data.rows[0].filepath}' />
+                                        <div class="like-and-comment-row">
+                                                <span class="number-likes">46 likes</span>
+                                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                                <i class="fa fa-comment" aria-hidden="true"></i>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        `);
+        $('#posts-list').find('div').first().remove();
 });
