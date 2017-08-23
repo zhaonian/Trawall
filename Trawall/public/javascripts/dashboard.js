@@ -1,5 +1,6 @@
 var socket = io();
 var userId = $('body').attr('id');
+var username = $('body').attr('username');
 
 // get all posts when load the page
 $(function () {
@@ -246,13 +247,12 @@ socket.on('NewPost', function (data) {
                                                 <i class="fa fa-comment" aria-hidden="true"></i>
                                         </div>
                                 </div>
-                        </div>         
+                        </div>
                 </div>
         `);
         $('#myModal').hide();
 });
 
 socket.on('DeletePost', function (data) {
-        console.log("---" + data.rows[0].id + "---");
         $(`#${data.rows[0].id}`).parent().parent().remove();
 });
