@@ -24,7 +24,7 @@
                                         <li id="text-home"><a href="#"><span class="font-effect-mitosis">Home</span></a></li>
                                         <li id="home" class="icon"><a href="#top"><span class="font-effect-mitosis"><i class="fa fa-2x fa-home" aria-hidden="true"></i></span></a></li>
                                 </div>
-                                <div class="icon-container">
+                                <div class="icon-container" id="messageBtn">
                                         <li id="text-message"><a href="#messenger"><span class="font-effect-wallpaper">Message</span></a></li>
                                         <li id="message" class="icon"><a href="#messenger"><span class="font-effect-wallpaper"><i class="fa fa-2x fa-commenting" aria-hidden="true"></i></span></a></li>
                                 </div>
@@ -50,8 +50,14 @@
 
         <!-- Posts -->
         <div class="container posts-container">
-                <div id="posts-list" class="col-lg-6 col-lg-offset-1">
+                <div class="row">
+                        <div id="posts-list" class="col-lg-6 col-lg-offset-1">
 
+                        </div>
+                        <!-- <div id="tags-list" class="col-lg-4 col-lg-offset-8">
+                                haahha          
+                        </div> -->
+                        <!-- TODO: Implement tags list -->
                 </div>
         </div>
 
@@ -59,8 +65,11 @@
         <div id="myModal" class="modal">
                 <!-- Modal content -->
                 <div class="modal-content">
+
                 </div>
         </div>
+
+
 
         <!-- Scripts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>        

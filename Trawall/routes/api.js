@@ -8,6 +8,8 @@ const multer = require('multer');
 const io = require('../socketio');
 
 var router = express.Router();
+var message_queues = new Map();
+
 
 const connectionString = process.env.DATABASE_URL || "postgres://luan:postgresql-luan@localhost/trawall"; // explicitely put pw here?
 
@@ -344,6 +346,64 @@ router.post('/api/post/vidPost', function (req, res, next) {
 
 
 
+
+
+
+
+
+
+
+
+
+// chat-box
+router.post('/api/:userEmail/message/:targetEmail', function (req, res, next) {
+        let userEmail = req.params.userEmail;
+        let targetEmail = req.params.targetEmail;
+        let message = req.body.message;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        res.render('error', { message: "Database Exception" });
+                }
+                client.query(`SELECT id FROM Trawall_Users WHERE email = '${targetEmail}';`, function (err, result) {
+                        if (err) {
+                                return res.render('error', { message: "Database Exception" });
+                        }
+                        if (result.rows.length > 0) {
+                                // deliver the message.
+                                let targetId = result.rows[0].id;
+                                var queue = message_queues.get(targetId);
+                                if (queue == null) {
+                                        queue = new Array();
+                                        message_queues.set(targetId, queue);
+                                }
+                                queue.push(userEmail + ": " + message);
+                                return res.json({status: 200});
+                        } else {
+                                // user not found.
+                                return res.json({status: 404});
+                        }
+                });
+                done();
+        });
+});
+
+router.get('/api/:userId/message', function (req, res, next) {
+        let userId = req.params.userId;
+        var queue = message_queues.get(userId);
+        if (queue == null || queue.length == 0) {
+                return res.json({
+                        status: 200,
+                        messages: []
+                });
+        } else {
+                var json = res.json({
+                        status: 200, 
+                        messages: queue
+                });
+                message_queues.set(userId, []);
+                return json;
+        }
+});
 
 
 module.exports = router;

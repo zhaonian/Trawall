@@ -12,23 +12,21 @@ $(function () {
                         for (let i = 0; i < data.posts.rows.length; i++) {
                                 $("#posts-list").append(`
                                         <div class="row post-row">
-                                                <div class="container">
-                                                        <div class="col-xs-1">
-                                                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                                <div class="col-xs-1">
+                                                        <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                                </div>
+                                                <div id="${data.posts.rows[i].id}" class="col-xs-offset-1 col-xs-10 content-container">
+                                                        <span class="post-username">${data.posts.rows[i].username}</span>
+                                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.posts.rows[i].location}</span>
+                                                        <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                                        <div class="post-content">${data.posts.rows[i].content}</div>
+                                                        <div class="post-tags">${data.posts.rows[i].tags}</div>
+                                                        <div class="like-and-comment-row">
+                                                                <span class="number-likes">46 likes</span>
+                                                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                                                <i class="fa fa-comment" aria-hidden="true"></i>
                                                         </div>
-                                                        <div id="${data.posts.rows[i].id}" class="col-xs-5 content-container paper">
-                                                                <span class="post-username">${data.posts.rows[i].username}</span>
-                                                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.posts.rows[i].location}</span>
-                                                                <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
-                                                                <div class="post-content">${data.posts.rows[i].content}</div>
-                                                                <div class="post-tags">${data.posts.rows[i].tags}</div>
-                                                                <div class="like-and-comment-row">
-                                                                        <span class="number-likes">46 likes</span>
-                                                                        <i class="fa fa-heart" aria-hidden="true"></i>
-                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
-                                                                </div>
-                                                        </div>
-                                                </div>         
+                                                </div>
                                         </div>
                                 `);
                                 // TODO: Change tags to an NoSQL array
@@ -125,7 +123,7 @@ $(function () {
                                         <div class="col-xs-1">
                                                 <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
                                         </div>
-                                        <div id="" class="col-xs-5 content-container paper">
+                                        <div id="" class="col-xs-5 content-container">
                                                 <div id="location-area"><textarea type='text' id='modal-location-area' placeholder='Where are you'></textarea></div>
                                                 <div id="tag-area"><textarea type='text' id='modal-tag-area' placeholder='Tag'></textarea></div>
                                                 <hr/>
@@ -160,7 +158,7 @@ $(function () {
                                         <div class="col-xs-1">
                                                 <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
                                         </div>
-                                        <div id="" class="col-xs-5 content-container paper">
+                                        <div class="col-xs-5 content-container">
                                                 <form method="POST" action="/api/post/imgPost" enctype="multipart/form-data" >
                                                         <input type="hidden" name="username" value=${username}>
                                                         <div id="location-area"><textarea type='text' id='modal-location-area' name='location' placeholder='Where are you'></textarea></div>
@@ -184,7 +182,7 @@ $(function () {
                                         <div class="col-xs-1">
                                                 <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
                                         </div>
-                                        <div id="" class="col-xs-5 content-container paper">
+                                        <div class="col-xs-5 content-container">
                                                 <form method="POST" action="/api/post/vidPost" enctype="multipart/form-data" >
                                                         <input type="hidden" name="username" value=${username}>
                                                         <div id="location-area"><textarea type='text' id='modal-location-area' name='location' placeholder='Where are you'></textarea></div>
@@ -286,30 +284,59 @@ $(function () {
 });
 
 
-
-
+// chat box
+$(function() {
+        // message chat-box
+        $(".navbar-right").on('click', '#messageBtn', function (e) {
+                $('.modal-content').html(`
+                        <div id="location-area"><textarea type='text' id='modal-location-area' placeholder='Whom to send'></textarea></div>
+                        <hr/>
+                        <div id="content"><textarea type='text' id='modal-text-area' placeholder='message...'></textarea></div>
+                        <hr/>
+                        <div id="post-btn-container"><button id='message-sent-btn' class='post-btn'>Send</button></div>
+                        `);
+                $('#myModal').css({ "display": "block" });
+        });
+        
+        // message chat-box on-send
+        $('.modal-content').on('click', '#message-sent-btn', function () {
+                $.ajax({
+                        type: "POST",
+                        url: `/api/` + username + `/message/` + $('#modal-location-area').val(),
+                        contentType: "application/x-www-form-urlencoded",
+                        data: {
+                                message: $('#modal-text-area').val()
+                        },
+                        success: function() {
+                                $('#myModal').css({ "display": "none" });
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                                alert("User " + $('#modal-location-area').val() + " doesn't exist.");
+                        } 
+                });
+        });
+});
 
 
 
 // socket response
 socket.on('NewPost', function (data) {
+        console.log(data.rows[0]);
         $("#posts-list").append(`
                 <div class="row post-row">
-                        <div class="container">
-                                <div class="col-xs-1">
-                                        <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
-                                </div>
-                                <div id="${data.rows[0].id}" class="col-xs-5 content-container paper">
-                                        <span class="post-username">${data.rows[0].username}</span>
-                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
-                                        <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
-                                        <div class="post-content">${data.rows[0].content}</div>
-                                        <div class="post-tags">${data.rows[0].tags}</div>
-                                        <div class="like-and-comment-row">
-                                                <span class="number-likes">46 likes</span>
-                                                <i class="fa fa-heart" aria-hidden="true"></i>
-                                                <i class="fa fa-comment" aria-hidden="true"></i>
-                                        </div>
+                        <div class="col-xs-1">
+                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                        </div>
+                        <div id="${data.rows[0].id}" class="col-xs-offset-1 col-xs-10 content-container">
+                                <span class="post-username">${data.rows[0].username}</span>
+                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
+                                <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                <div class="post-content">${data.rows[0].content}</div>
+                                <div class="post-tags">${data.rows[0].tags}</div>
+                                <div class="like-and-comment-row">
+                                        <span class="number-likes">46 likes</span>
+                                        <i class="fa fa-heart" aria-hidden="true"></i>
+                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                 </div>
                         </div>
                 </div>
@@ -318,28 +345,26 @@ socket.on('NewPost', function (data) {
 });
 
 socket.on('DeletePost', function (data) {
-        $(`#${data.rows[0].id}`).parent().parent().remove();
+        $(`#${data.rows[0].id}`).parent().remove();
 });
 
 socket.on('NewImgPost', function (data) {
         $("#posts-list").append(`
                 <div class="row post-row">
-                        <div class="container">
-                                <div class="col-xs-1">
-                                        <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
-                                </div>
-                                <div id="${data.rows[0].id}" class="col-xs-5 content-container paper">
-                                        <span class="post-username">${data.rows[0].username}</span>
-                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
-                                        <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
-                                        <div class="post-content">${data.rows[0].content}</div>
-                                        <div class="post-tags">${data.rows[0].tags}</div>
-                                        <img class="post-img" src='${data.rows[0].filepath}' />
-                                        <div class="like-and-comment-row">
-                                                <span class="number-likes">46 likes</span>
-                                                <i class="fa fa-heart" aria-hidden="true"></i>
-                                                <i class="fa fa-comment" aria-hidden="true"></i>
-                                        </div>
+                        <div class="col-xs-1">
+                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                        </div>
+                        <div id="${data.rows[0].id}" class="col-xs-offset-1 col-xs-10 content-container">
+                                <span class="post-username">${data.rows[0].username}</span>
+                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
+                                <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                <div class="post-content">${data.rows[0].content}</div>
+                                <div class="post-tags">${data.rows[0].tags}</div>
+                                <img class="post-img" src='${data.rows[0].filepath}' />
+                                <div class="like-and-comment-row">
+                                        <span class="number-likes">46 likes</span>
+                                        <i class="fa fa-heart" aria-hidden="true"></i>
+                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                 </div>
                         </div>
                 </div>
@@ -350,28 +375,62 @@ socket.on('NewImgPost', function (data) {
 socket.on('NewVidPost', function (data) {
         $("#posts-list").append(`
                 <div class="row post-row">
-                        <div class="container">
-                                <div class="col-xs-1">
-                                        <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
-                                </div>
-                                <div id="${data.rows[0].id}" class="col-xs-5 content-container paper">
-                                        <span class="post-username">${data.rows[0].username}</span>
-                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
-                                        <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
-                                        <div class="post-content">${data.rows[0].content}</div>
-                                        <div class="post-tags">${data.rows[0].tags}</div>
-                                        <img class="post-img" src='${data.rows[0].filepath}' />
-                                        <video class="post-vid" controls loop autoplay>
-                                                <source src="${data.rows[0].filepath}" type="video/mp4">
-                                        </video>
-                                        <div class="like-and-comment-row">
-                                                <span class="number-likes">46 likes</span>
-                                                <i class="fa fa-heart" aria-hidden="true"></i>
-                                                <i class="fa fa-comment" aria-hidden="true"></i>
-                                        </div>
+                        <div class="col-xs-1">
+                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                        </div>
+                        <div id="${data.rows[0].id}" class="col-xs-offset-1 col-xs-10 content-container">
+                                <span class="post-username">${data.rows[0].username}</span>
+                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
+                                <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                <div class="post-content">${data.rows[0].content}</div>
+                                <div class="post-tags">${data.rows[0].tags}</div>
+                                <img class="post-img" src='${data.rows[0].filepath}' />
+                                <video class="post-vid" controls loop autoplay>
+                                        <source src="${data.rows[0].filepath}" type="video/mp4">
+                                </video>
+                                <div class="like-and-comment-row">
+                                        <span class="number-likes">46 likes</span>
+                                        <i class="fa fa-heart" aria-hidden="true"></i>
+                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                 </div>
                         </div>
                 </div>
         `);
         $('#posts-list').find('div').first().remove();
 });
+
+
+// notification.
+function notify(queue) {
+        if (!("Notification" in window)) {
+                alert("This browser does not support system notifications");
+        } else if (Notification.permission === "granted") {
+                for (var i = 0; i < queue.length; i ++)
+                        new Notification(queue[i]);
+        } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission(function (permission) {
+                        // If the user accepts, let's create a notification
+                      if (permission === "granted") {
+                                notify(queue);
+                      }
+                });
+        }
+}
+
+// message polling.
+function poll_messages() {
+        $.ajax({
+                type: "GET",
+                url: `/api/${userId}/message`,
+                contentType: "json",
+                success: function (data) {
+                        notify(data.messages);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                        console.log(errorThrown);
+                } 
+        });
+        setTimeout(poll_messages, 5000);
+}
+
+poll_messages();
