@@ -152,18 +152,6 @@ $(function () {
                 });
         });
 
-
-        // TODO: fix/choose file dialogue does not pop up in modal
-        // $(".navbar-right").on('click', '#imagePostBtn', function (e) {
-        //         $('.modal-content').html(`
-        //                 <form method="POST" action="/api/post/imgPost" enctype="multipart/form-data" >
-        //                         <input type="file" name="imagePost">
-        //                         <input id='image-post-submit' type="submit" value="Post">
-        //                 </form>
-        //         `);
-        //         $('#myModal').css({ "display": "block" });
-        // });
-
         // show picture post doialogue
         $(".navbar-right").on('click', '#imagePostBtn', function (e) {
                 $('#posts-list').prepend(`
@@ -188,6 +176,29 @@ $(function () {
                 );
         });
 
+        // show video post doialogue
+        $(".navbar-right").on('click', '#videoPostBtn', function (e) {
+                $('#posts-list').prepend(`
+                        <div class="row post-row">
+                                <div class="container">
+                                        <div class="col-xs-1">
+                                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                        </div>
+                                        <div id="" class="col-xs-5 content-container paper">
+                                                <form method="POST" action="/api/post/vidPost" enctype="multipart/form-data" >
+                                                        <input type="hidden" name="username" value=${username}>
+                                                        <div id="location-area"><textarea type='text' id='modal-location-area' name='location' placeholder='Where are you'></textarea></div>
+                                                        <div id="tag-area"><textarea type='text' id='modal-tag-area' name='tags' placeholder='Tag'></textarea></div>
+                                                        <hr/>
+                                                        <div id="content"><textarea type='text' id='modal-text-area' name='content' placeholder='Your text here'></textarea></div>
+                                                        <input id='file-upload' type="file" name="videoPost">
+                                                        <input id='image-post-submit' class='post-btn' type="submit" value="Post">
+                                                </form>
+                                        </div>
+                                </div>
+                        </div>`
+                );
+        });
 
 
 
@@ -311,7 +322,6 @@ socket.on('DeletePost', function (data) {
 });
 
 socket.on('NewImgPost', function (data) {
-        console.log(data.rows[0]);
         $("#posts-list").append(`
                 <div class="row post-row">
                         <div class="container">
@@ -325,6 +335,35 @@ socket.on('NewImgPost', function (data) {
                                         <div class="post-content">${data.rows[0].content}</div>
                                         <div class="post-tags">${data.rows[0].tags}</div>
                                         <img class="post-img" src='${data.rows[0].filepath}' />
+                                        <div class="like-and-comment-row">
+                                                <span class="number-likes">46 likes</span>
+                                                <i class="fa fa-heart" aria-hidden="true"></i>
+                                                <i class="fa fa-comment" aria-hidden="true"></i>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        `);
+        $('#posts-list').find('div').first().remove();
+});
+
+socket.on('NewVidPost', function (data) {
+        $("#posts-list").append(`
+                <div class="row post-row">
+                        <div class="container">
+                                <div class="col-xs-1">
+                                        <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                </div>
+                                <div id="${data.rows[0].id}" class="col-xs-5 content-container paper">
+                                        <span class="post-username">${data.rows[0].username}</span>
+                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
+                                        <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                        <div class="post-content">${data.rows[0].content}</div>
+                                        <div class="post-tags">${data.rows[0].tags}</div>
+                                        <img class="post-img" src='${data.rows[0].filepath}' />
+                                        <video class="post-vid" controls loop autoplay>
+                                                <source src="${data.rows[0].filepath}" type="video/mp4">
+                                        </video>
                                         <div class="like-and-comment-row">
                                                 <span class="number-likes">46 likes</span>
                                                 <i class="fa fa-heart" aria-hidden="true"></i>

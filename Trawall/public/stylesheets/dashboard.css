@@ -96,6 +96,12 @@ body .my-nav-bar {
         padding-bottom: 10px;
 }
 
+.post-vid {
+        width: 320px;
+        height: 260px;
+        padding-bottom: 10px;        
+}
+
 .number-likes {
         color: rgb(143, 143, 143);
         font-weight: 800px;

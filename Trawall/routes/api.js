@@ -260,20 +260,31 @@ router.post('/api/:userId/unlike/:postId', function (req, res, next) {
 });
 
 
-// upload files (image and video)
-var storage = multer.diskStorage({
+// upload files setup (image and video)
+var imageStorage = multer.diskStorage({
         destination: function (req, file, cb) {
                 cb(null, 'public/images/avatars/')
         },
         filename: function (req, file, cb) {
                 cb(null, file.fieldname + '.jpeg')
         }
-})
+});
 
-var upload = multer({ storage: storage }).single('imagePost');
+var videoStorage = multer.diskStorage({
+        destination: function (req, file, cb) {
+                cb(null, 'public/videos/')
+        },
+        filename: function (req, file, cb) {
+                cb(null, file.fieldname + '.mp4')
+        }
+});
 
+var uploadImage = multer({ storage: imageStorage }).single('imagePost');
+var uploadVideo = multer({ storage: videoStorage }).single('videoPost');
+
+// image
 router.post('/api/post/imgPost', function (req, res, next) {
-        upload(req, res, function (err) {
+        uploadImage(req, res, function (err) {
                 if (err) {
                         return res.render('error', {message: "upload failed"});
                 }
@@ -299,7 +310,36 @@ router.post('/api/post/imgPost', function (req, res, next) {
                         done();
                 });
         });
+});
 
+// video
+router.post('/api/post/vidPost', function (req, res, next) {
+        uploadVideo(req, res, function (err) {
+                if (err) {
+                        return res.render('error', {message: "upload failed"});
+                }
+                console.log('file upload success');
+
+                let filePath = req.file.path.substring(7);
+                let id = uuidv1();
+                let username = req.body.username;
+                let format = 2;
+                let content = req.body.content;
+                let location = req.body.location;
+                let tags = req.body.tags;
+                pg.connect(connectionString, function (err, client, done) {
+                        if (err) {
+                                res.render('error', { message: "Database Exception" });
+                        }
+                        client.query(`INSERT INTO Posts VALUES('${id}', '${username}', ${format}, '${content}', '${location}', '${tags}', '${filePath}')  RETURNING *;`, function (err, result) {
+                                if (err) {
+                                        return res.render('error', { message: "Database Exception" });
+                                }
+                                return io.getInstance().emit('NewVidPost', result);
+                        });
+                        done();
+                });
+        });
 });
 
 
