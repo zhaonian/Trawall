@@ -189,7 +189,7 @@ $(function () {
                         type: "DELETE",
                         url: `/api/post/delete/${postId}`,
                         success: function (data) {
-                                e.target.parentNode.parentNode.parentNode.parentNode.remove();
+
                         }
                 });
         });
@@ -249,5 +249,10 @@ socket.on('NewPost', function (data) {
                         </div>         
                 </div>
         `);
-        $('#myModal').hide();        
+        $('#myModal').hide();
+});
+
+socket.on('DeletePost', function (data) {
+        console.log("---" + data.rows[0].id + "---");
+        $(`#${data.rows[0].id}`).parent().parent().remove();
 });

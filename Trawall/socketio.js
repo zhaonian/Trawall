@@ -8,10 +8,6 @@ module.exports = {
                 instance = require('socket.io')(server);
                 instance.on('connection', function (socket) {
                         console.log('a user connected');
-                        // socket
-                        //         .on('NewPost', function (msg) {
-                        //                 console.log('message: ' + msg);
-                        //         });
                 });
         }
 };

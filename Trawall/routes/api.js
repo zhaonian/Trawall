@@ -209,11 +209,13 @@ router.delete('/api/post/delete/:postId', function (req, res, next) {
                 if (err) {
                         res.render('error', { message: "Database Exception" });
                 }
-                client.query(`DELETE FROM Posts WHERE id = '${postId}';`, function (err, result) {
+                client.query(`DELETE FROM Posts WHERE id = '${postId}' RETURNING id;`, function (err, result) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception" });
                         }
-                        return res.json({ post: result });
+                        // console.log(result);
+                        return io.getInstance().emit('DeletePost', result);                                                
+                        // return res.json({ post: result });
                 });
                 done();
         });
