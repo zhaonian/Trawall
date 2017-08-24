@@ -284,44 +284,43 @@ $(function () {
 });
 
 
-// chat box
-$(function() {
-        // message chat-box
-        $(".navbar-right").on('click', '#messageBtn', function (e) {
-                $('.modal-content').html(`
-                        <div id="location-area"><textarea type='text' id='modal-location-area' placeholder='Whom to send'></textarea></div>
-                        <hr/>
-                        <div id="content"><textarea type='text' id='modal-text-area' placeholder='message...'></textarea></div>
-                        <hr/>
-                        <div id="post-btn-container"><button id='message-sent-btn' class='post-btn'>Send</button></div>
-                        `);
-                $('#myModal').css({ "display": "block" });
-        });
+// // chat box
+// $(function() {
+//         // message chat-box
+//         $(".navbar-right").on('click', '#messageBtn', function (e) {
+//                 $('.modal-content').html(`
+//                         <div id="location-area"><textarea type='text' id='modal-location-area' placeholder='Whom to send'></textarea></div>
+//                         <hr/>
+//                         <div id="content"><textarea type='text' id='modal-text-area' placeholder='message...'></textarea></div>
+//                         <hr/>
+//                         <div id="post-btn-container"><button id='message-sent-btn' class='post-btn'>Send</button></div>
+//                         `);
+//                 $('#myModal').css({ "display": "block" });
+//         });
         
-        // message chat-box on-send
-        $('.modal-content').on('click', '#message-sent-btn', function () {
-                $.ajax({
-                        type: "POST",
-                        url: `/api/` + username + `/message/` + $('#modal-location-area').val(),
-                        contentType: "application/x-www-form-urlencoded",
-                        data: {
-                                message: $('#modal-text-area').val()
-                        },
-                        success: function() {
-                                $('#myModal').css({ "display": "none" });
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                                alert("User " + $('#modal-location-area').val() + " doesn't exist.");
-                        } 
-                });
-        });
-});
+//         // message chat-box on-send
+//         $('.modal-content').on('click', '#message-sent-btn', function () {
+//                 $.ajax({
+//                         type: "POST",
+//                         url: `/api/` + username + `/message/` + $('#modal-location-area').val(),
+//                         contentType: "application/x-www-form-urlencoded",
+//                         data: {
+//                                 message: $('#modal-text-area').val()
+//                         },
+//                         success: function() {
+//                                 $('#myModal').css({ "display": "none" });
+//                         },
+//                         error: function(XMLHttpRequest, textStatus, errorThrown) { 
+//                                 alert("User " + $('#modal-location-area').val() + " doesn't exist.");
+//                         } 
+//                 });
+//         });
+// });
 
 
 
 // socket response
 socket.on('NewPost', function (data) {
-        console.log(data.rows[0]);
         $("#posts-list").append(`
                 <div class="row post-row">
                         <div class="col-xs-1">
@@ -400,37 +399,37 @@ socket.on('NewVidPost', function (data) {
 });
 
 
-// notification.
-function notify(queue) {
-        if (!("Notification" in window)) {
-                alert("This browser does not support system notifications");
-        } else if (Notification.permission === "granted") {
-                for (var i = 0; i < queue.length; i ++)
-                        new Notification(queue[i]);
-        } else if (Notification.permission !== 'denied') {
-                Notification.requestPermission(function (permission) {
-                        // If the user accepts, let's create a notification
-                      if (permission === "granted") {
-                                notify(queue);
-                      }
-                });
-        }
-}
+// // notification.
+// function notify(queue) {
+//         if (!("Notification" in window)) {
+//                 alert("This browser does not support system notifications");
+//         } else if (Notification.permission === "granted") {
+//                 for (var i = 0; i < queue.length; i ++)
+//                         new Notification(queue[i]);
+//         } else if (Notification.permission !== 'denied') {
+//                 Notification.requestPermission(function (permission) {
+//                         // If the user accepts, let's create a notification
+//                       if (permission === "granted") {
+//                                 notify(queue);
+//                       }
+//                 });
+//         }
+// }
 
-// message polling.
-function poll_messages() {
-        $.ajax({
-                type: "GET",
-                url: `/api/${userId}/message`,
-                contentType: "json",
-                success: function (data) {
-                        notify(data.messages);
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) { 
-                        console.log(errorThrown);
-                } 
-        });
-        setTimeout(poll_messages, 5000);
-}
+// // message polling.
+// function poll_messages() {
+//         $.ajax({
+//                 type: "GET",
+//                 url: `/api/${userId}/message`,
+//                 contentType: "json",
+//                 success: function (data) {
+//                         notify(data.messages);
+//                 },
+//                 error: function(XMLHttpRequest, textStatus, errorThrown) { 
+//                         console.log(errorThrown);
+//                 } 
+//         });
+//         setTimeout(poll_messages, 5000);
+// }
 
-poll_messages();
+// poll_messages();
