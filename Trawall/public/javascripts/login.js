@@ -65,6 +65,7 @@ $(function () {
 $(function () {
         $('#login-container-id').on('click', '#signup-btn', function (e) {
                 $('#login-btn').fadeOut('fast', function () {
+                        $('#username').show();    
                         $('#password').css('visibility', 'visible');                        
                         $('#reset-btn').hide();
                         $('#login-form').attr('action', '/api/user/register');
@@ -77,6 +78,7 @@ $(function () {
 $(function () {
         $('#login-container-id').on('click', '#reset-pw-link', function (e) {
                 $('#login-btn').fadeOut('fast', function () {
+                        $('#username').hide();
                         $('#password').css('visibility', 'hidden');
                         $('#register-btn').hide();
                         $('#login-form').attr('action', '/api/user/send-reset-link');

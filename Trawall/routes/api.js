@@ -45,13 +45,14 @@ router.post('/api/user/login', function (req, res, next) {
 // register
 router.post('/api/user/register', function (req, res, next) {
         let email = req.body.email;
+        let username = req.body.username;
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
-                        return res.render('error', { message: "Database Exception" });
+                        return res.render('error', { message: "Database Exception " + err });
                 }
                 client.query(`SELECT FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
                         if (err) {
-                                return res.render('error', { message: "Database Exception" });
+                                return res.render('error', { message: "Database Exception " + err });
                         }
                         if (result.rowCount === 1) {
                                 return res.render('error', { message: "User with same email already exists" });
@@ -59,9 +60,9 @@ router.post('/api/user/register', function (req, res, next) {
                 });
                 let uuid = uuidv1();
                 let hash = bcrypt.hashSync(req.body.password, 10);
-                client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', null, null, null);`, function (err, result) {
+                client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', '${username}', null, null);`, function (err, result) {
                         if (err) {
-                                return res.render('error', { message: "Database Exception" });
+                                return res.render('error', { message: "Database Exception " + err });
                         }
                         req.session.id = uuid;
                         return res.redirect('/dashboard')

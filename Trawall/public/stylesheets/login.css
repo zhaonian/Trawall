@@ -87,3 +87,7 @@ body #reset-btn {
         display: none;
         background-color: rgb(191, 94, 67);      
 }
+
+#username {
+        display: none;
+}
