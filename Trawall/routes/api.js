@@ -163,16 +163,16 @@ router.get('/api/post/:offset?/:limit?', function (req, res, next) {
                         return res.render('error', { message: "Database Exception" });
                 }
                 if (typeof limit === 'undefined' || typeof offset === 'undefined') { // does not specify pagination
-                        client.query(`SELECT * FROM posts;`, function (err, result) {
+                        client.query(`SELECT * FROM Posts ORDER BY creationTime DESC;`, function (err, result) {
                                 if (err) {
-                                        return res.render('error', { message: "Database Exception" });
+                                        return res.render('error', { message: "Database Exception " + err });
                                 }
                                 return res.json({ posts: result });
                         });
                 } else { // spcifies pagination
-                        client.query(`SELECT * FROM posts LIMIT ${limit} OFFSET ${offset};`, function (err, result) {
+                        client.query(`SELECT * FROM Posts ORDER BY creationTime DESC LIMIT ${limit} OFFSET ${offset};`, function (err, result) {
                                 if (err) {
-                                        return res.render('error', { message: "Database Exception" });
+                                        return res.render('error', { message: "Database Exception " + err });
                                 }
                                 return res.json({ posts: result });
                         });
@@ -326,7 +326,7 @@ router.post('/api/post/vidPost', function (req, res, next) {
                 let filePath = req.file.path.substring(7);
                 let id = uuidv1();
                 let username = req.body.username;
-                let format = 2;
+                let format = 3;
                 let content = req.body.content;
                 let location = req.body.location;
                 let tags = req.body.tags;

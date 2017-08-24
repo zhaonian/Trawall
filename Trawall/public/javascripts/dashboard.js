@@ -10,29 +10,72 @@ $(function () {
                 contentType: "application/x-www-form-urlencoded",
                 success: function (data) {
                         for (let i = 0; i < data.posts.rows.length; i++) {
-                                $("#posts-list").append(`
-                                        <div class="row post-row">
-                                                <div class="col-xs-1">
-                                                        <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
-                                                </div>
-                                                <div id="${data.posts.rows[i].id}" class="col-xs-offset-1 col-xs-10 content-container">
-                                                        <span class="post-username">${data.posts.rows[i].username}</span>
-                                                        <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.posts.rows[i].location}</span>
-                                                        <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
-                                                        <div class="post-content">${data.posts.rows[i].content}</div>
-                                                        <div class="post-tags">${data.posts.rows[i].tags}</div>
-                                                        <div class="like-and-comment-row">
-                                                                <span class="number-likes">46 likes</span>
-                                                                <i class="fa fa-heart" aria-hidden="true"></i>
-                                                                <i class="fa fa-comment" aria-hidden="true"></i>
+                                if (data.posts.rows[i].format === 1) {
+                                        $("#posts-list").append(`
+                                                <div class="row post-row">
+                                                        <div class="col-xs-1">
+                                                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                                        </div>
+                                                        <div id="${data.posts.rows[i].id}" class="col-xs-offset-1 col-xs-10 content-container">
+                                                                <span class="post-username">${data.posts.rows[i].username}</span>
+                                                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.posts.rows[i].location}</span>
+                                                                <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                                                <div class="post-content">${data.posts.rows[i].content}</div>
+                                                                <div class="post-tags">${data.posts.rows[i].tags}</div>
+                                                                <div class="like-and-comment-row">
+                                                                        <span class="number-likes">46 likes</span>
+                                                                        <i class="fa fa-heart" aria-hidden="true"></i>
+                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
+                                                                </div>
                                                         </div>
                                                 </div>
-                                        </div>
-                                `);
-                                // TODO: Change tags to an NoSQL array
-                                // for (var j = 0; j < data.posts.rows[i].tags.length; j++) {
-                                // $("#" + data.posts.rows[i].id + ".post-tags ").append("#" + data.posts.rows[i].tags + " ");
-                                // }
+                                        `);
+                                } else if (data.posts.rows[i].format === 2) {
+                                        $("#posts-list").append(`
+                                                <div class="row post-row">
+                                                        <div class="col-xs-1">
+                                                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                                        </div>
+                                                        <div id="${data.posts.rows[i].id}" class="col-xs-offset-1 col-xs-10 content-container">
+                                                                <span class="post-username">${data.posts.rows[i].username}</span>
+                                                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.posts.rows[i].location}</span>
+                                                                <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                                                <div class="post-content">${data.posts.rows[i].content}</div>
+                                                                <div class="post-tags">${data.posts.rows[i].tags}</div>
+                                                                <img class="post-img" src='${data.posts.rows[i].filepath}' />
+                                                                <div class="like-and-comment-row">
+                                                                        <span class="number-likes">46 likes</span>
+                                                                        <i class="fa fa-heart" aria-hidden="true"></i>
+                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        `);
+                                } else if (data.posts.rows[i].format === 3) {
+                                        $("#posts-list").append(`
+                                                <div class="row post-row">
+                                                        <div class="col-xs-1">
+                                                                <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
+                                                        </div>
+                                                        <div id="${data.posts.rows[i].id}" class="col-xs-offset-1 col-xs-10 content-container">
+                                                                <span class="post-username">${data.posts.rows[i].username}</span>
+                                                                <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.posts.rows[i].location}</span>
+                                                                <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
+                                                                <div class="post-content">${data.posts.rows[i].content}</div>
+                                                                <div class="post-tags">${data.posts.rows[i].tags}</div>
+                                                                <img class="post-img" src='${data.posts.rows[i].filepath}' />
+                                                                <video class="post-vid" controls loop autoplay>
+                                                                        <source src="${data.posts.rows[i].filepath}" type="video/mp4">
+                                                                </video>
+                                                                <div class="like-and-comment-row">
+                                                                        <span class="number-likes">46 likes</span>
+                                                                        <i class="fa fa-heart" aria-hidden="true"></i>
+                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        `);
+                                }
                         }
                 }
         });
@@ -297,7 +340,7 @@ $(function () {
 //                         `);
 //                 $('#myModal').css({ "display": "block" });
 //         });
-        
+
 //         // message chat-box on-send
 //         $('.modal-content').on('click', '#message-sent-btn', function () {
 //                 $.ajax({
@@ -321,7 +364,9 @@ $(function () {
 
 // socket response
 socket.on('NewPost', function (data) {
-        $("#posts-list").append(`
+        // $('#posts-list').find('div').first().remove();        
+        $('#text-post-btn').parent().parent().parent().remove();
+        $("#posts-list").prepend(`
                 <div class="row post-row">
                         <div class="col-xs-1">
                                 <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
@@ -340,7 +385,6 @@ socket.on('NewPost', function (data) {
                         </div>
                 </div>
         `);
-        $('#posts-list').find('div').first().remove();
 });
 
 socket.on('DeletePost', function (data) {
@@ -348,7 +392,8 @@ socket.on('DeletePost', function (data) {
 });
 
 socket.on('NewImgPost', function (data) {
-        $("#posts-list").append(`
+        $('#image-post-submit').parent().parent().parent().parent().remove();
+        $("#posts-list").prepend(`
                 <div class="row post-row">
                         <div class="col-xs-1">
                                 <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
@@ -368,11 +413,11 @@ socket.on('NewImgPost', function (data) {
                         </div>
                 </div>
         `);
-        $('#posts-list').find('div').first().remove();
 });
 
 socket.on('NewVidPost', function (data) {
-        $("#posts-list").append(`
+        $('#image-post-submit').parent().parent().parent().parent().remove();
+        $("#posts-list").prepend(`
                 <div class="row post-row">
                         <div class="col-xs-1">
                                 <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
@@ -395,7 +440,6 @@ socket.on('NewVidPost', function (data) {
                         </div>
                 </div>
         `);
-        $('#posts-list').find('div').first().remove();
 });
 
 
