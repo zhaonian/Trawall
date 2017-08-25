@@ -379,7 +379,7 @@ router.post('/api/imgPost', function (req, res, next) {
                 }
                 console.log('file upload success');
 
-                let filePath = req.file.path.substring(7);
+                let filePath = req.file ? req.file.path.substring(7) : "/images/no_img_found.png";
                 let id = uuidv1();
                 let username = req.body.username;
                 let format = 2;
@@ -409,7 +409,7 @@ router.post('/api/vidPost', function (req, res, next) {
                 }
                 console.log('file upload success');
 
-                let filePath = req.file.path.substring(7);
+                let filePath = req.file ? req.file.path.substring(7) : "";
                 let id = uuidv1();
                 let username = req.body.username;
                 let format = 3;

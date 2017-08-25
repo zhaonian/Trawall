@@ -1,7 +1,6 @@
 module.exports = function (req, res, next) {
-        if (req.session.id === "username=Please" || !req.session.id) {
-                // return res.render('login', {});
-                return res.render('login', {});
+        if (typeof req.session.id  === 'undefined' || req.session.id === "username=Please" || !req.session.id) {
+                res.redirect('/login');
         } else {
                 next();
         }

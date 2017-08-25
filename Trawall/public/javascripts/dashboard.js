@@ -9,7 +9,8 @@ $(function () {
                 url: `/api/post/0/10`,
                 contentType: "application/x-www-form-urlencoded",
                 success: function (data) {
-                        for (let i = 0; i < data.posts.rows.length; i++) {
+                        let size = data.posts ? data.posts.rows.length : 0;
+                        for (let i = 0; i < size; i++) {
                                 if (data.posts.rows[i].format === 1) {
                                         $("#posts-list").append(`
                                                 <div class="row post-row">
@@ -221,7 +222,7 @@ $(function () {
                                                 <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
                                         </div>
                                         <div class="col-xs-5 content-container">
-                                                <form method="POST" action="/api/imgPost" enctype="multipart/form-data" >
+                                                <form id="file-upload-form" method="POST" action="/api/imgPost" enctype="multipart/form-data" >
                                                         <input type="hidden" name="username" value=${username}>
                                                         <div id="location-area"><textarea type='text' id='modal-location-area' name='location' placeholder='Where are you'></textarea></div>
                                                         <div id="tag-area"><textarea type='text' id='modal-tag-area' name='tags' placeholder='Tag'></textarea></div>
@@ -245,7 +246,7 @@ $(function () {
                                                 <a href='#'><img class='profile-pic' src="../images/avatars/3.jpeg" /></a>
                                         </div>
                                         <div class="col-xs-5 content-container">
-                                                <form method="POST" action="/api/vidPost" enctype="multipart/form-data" >
+                                                <form id="file-upload-form" method="POST" action="/api/vidPost" enctype="multipart/form-data" >
                                                         <input type="hidden" name="username" value=${username}>
                                                         <div id="location-area"><textarea type='text' id='modal-location-area' name='location' placeholder='Where are you'></textarea></div>
                                                         <div id="tag-area"><textarea type='text' id='modal-tag-area' name='tags' placeholder='Tag'></textarea></div>
@@ -368,8 +369,8 @@ socket.on('NewImgPost', function (data) {
                                 <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
                                 <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
                                 <div class="post-content">${data.rows[0].content}</div>
-                                <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[0].tags}</span></div>
-                                <img class="post-img" src='${data.rows[0].filepath}' />
+                                <div class="post-tags"><span class='post-tags-text'>#${data.rows[0].tags}</span></div>
+                                <img class="post-img" src='${data.rows[0].filepath}' alt='../images/no_img_found.png' />
                                 <div class="like-and-comment-row">
                                         <span class="number-likes">0 likes</span>
                                         <i class="fa fa-heart" aria-hidden="true"></i>
@@ -391,10 +392,9 @@ socket.on('NewVidPost', function (data) {
                                 <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
                                 <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
                                 <div class="post-content">${data.rows[0].content}</div>
-                                <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[0].tags}</span></div>
-                                <img class="post-img" src='${data.rows[0].filepath}' />
+                                <div class="post-tags"><span class='post-tags-text'>#${data.rows[0].tags}</span></div>
                                 <video class="post-vid" controls loop autoplay>
-                                        <source src="${data.rows[0].filepath}" type="video/mp4">
+                                        <source src="${data.rows[0].filepath}" type="video/mp4" />
                                 </video>
                                 <div class="like-and-comment-row">
                                         <span class="number-likes">0 likes</span>
