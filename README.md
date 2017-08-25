@@ -1,7 +1,9 @@
 ### Just a wall for sharing your travels with the world
 
 Setup:
-- 
+- Redirect to the project root
+- run ``` make init-db ``` to set up the database and db user
+- run ``` make run ``` to run the server
 
 
 --------------------------------------------------------------------------------
