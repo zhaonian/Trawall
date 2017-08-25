@@ -307,7 +307,6 @@ $(function () {
 
 // socket response
 socket.on('NewPost', function (data) {
-        // $('#posts-list').find('div').first().remove();        
         $('#text-post-btn').parent().parent().parent().remove();
         $("#posts-list").prepend(`
                 <div class="row post-row">
@@ -319,7 +318,7 @@ socket.on('NewPost', function (data) {
                                 <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
                                 <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
                                 <div class="post-content">${data.rows[0].content}</div>
-                                <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[i].tags}</span></div>
+                                <div class="post-tags"><span class='post-tags-text'>#${data.rows[0].tags}</span></div>
                                 <div class="like-and-comment-row">
                                         <span class="number-likes">46 likes</span>
                                         <i class="fa fa-heart" aria-hidden="true"></i>
@@ -346,7 +345,7 @@ socket.on('NewImgPost', function (data) {
                                 <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
                                 <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
                                 <div class="post-content">${data.rows[0].content}</div>
-                                <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[i].tags}</span></div>
+                                <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[0].tags}</span></div>
                                 <img class="post-img" src='${data.rows[0].filepath}' />
                                 <div class="like-and-comment-row">
                                         <span class="number-likes">46 likes</span>
@@ -370,7 +369,7 @@ socket.on('NewVidPost', function (data) {
                                 <span class="post-location"><i class="fa fa-map-marker" aria-hidden="true"></i> ${data.rows[0].location}</span>
                                 <span class="delete-post-btn"><i class="fa fa-times" aria-hidden="true"></i></span>
                                 <div class="post-content">${data.rows[0].content}</div>
-                                <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[i].tags}</span></div>
+                                <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[0].tags}</span></div>
                                 <img class="post-img" src='${data.rows[0].filepath}' />
                                 <video class="post-vid" controls loop autoplay>
                                         <source src="${data.rows[0].filepath}" type="video/mp4">
