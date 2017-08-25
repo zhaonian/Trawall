@@ -510,7 +510,7 @@ $(function () {
                 $('.modal-content').html(`
                         <div id="location-area"><textarea type='text' id='modal-target-email' placeholder='Whom to send'></textarea></div>
                         <hr/>
-                        <div id="history"><textarea type='text' id='modal-history-area' placeholder='No history yet.'></textarea></div>
+                        <div id="history"><textarea type='text' id='modal-history-area' placeholder='No history yet.' readOnly></textarea></div>
                         <hr/>
                         <div id="content"><textarea type='text' id='modal-text-area' placeholder='message...'></textarea></div>
                         <hr/>
