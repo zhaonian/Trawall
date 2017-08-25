@@ -1,9 +1,14 @@
 ### Just a wall for sharing your travels with the world
 
+Deployed here:
+[auroracatcher.com/trawall](auroracatcher.com:3000/login)
+
+
 Setup:
 - Redirect to the project root
 - run ``` make init-db ``` to set up the database and db user
 - run ``` make run ``` to run the server
+- go to [localhost:3000/login](localhost:3000/login)
 
 
 --------------------------------------------------------------------------------
