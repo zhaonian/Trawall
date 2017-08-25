@@ -13,6 +13,32 @@ var router = express.Router();
 
 const connectionString = process.env.DATABASE_URL || "postgres://luan:postgresql-luan@localhost/trawall"; // explicitely put pw here?
 
+var pgClient = new pg.Client(connectionString);
+pgClient.connect();
+
+// User API
+// search
+router.get('/api/user/search/:email?', function (req, res, next) {
+        let email = req.query.email;
+        if (email == null || email.length == 0)
+                return res.json(new Array());
+
+        const query = pgClient.query(`SELECT id, email, username FROM Trawall_Users WHERE email LIKE '%${email}%' LIMIT 5;`, function (err, result) {
+                if (err) {
+                        return res.render('error', { message: "Database Exception " + err });
+                }
+                var searchResult = new Array();
+                for (var i = 0; i < result.rowCount; i++)
+                        searchResult.push({
+                                id: result.rows[i].id,
+                                email: result.rows[i].email,
+                                username: result.rows[i].username
+                        });
+                return res.json(searchResult);
+        });
+        query.on('end', () => { pgClient.emit(); });
+});
+
 // User API
 // login
 router.post('/api/user/login', function (req, res, next) {
@@ -312,7 +338,7 @@ router.post('/api/:userId/unlike/:postId', function (req, res, next) {
 });
 
 // get all the likes of the current user
-router.get('/api/like/:userId', function(req, res, next) {
+router.get('/api/like/:userId', function (req, res, next) {
         let userId = req.params.userId;
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
@@ -329,7 +355,7 @@ router.get('/api/like/:userId', function(req, res, next) {
 });
 
 // get total number of likes of a post
-router.get('/api/number/like', function(req, res, next) {
+router.get('/api/number/like', function (req, res, next) {
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
                         res.render('error', { message: "Database Exception " + err });
@@ -338,7 +364,7 @@ router.get('/api/number/like', function(req, res, next) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception " + err });
                         }
-                        return res.json({ 
+                        return res.json({
                                 likes: result
                         });
                 });
@@ -450,6 +476,76 @@ router.get('/api/tag/:tags', function (req, res, next) {
 
 
 
+
+// chat-box
+// Send message to target user with targetId.
+router.post('/api/message/:targetId', function (req, res, next) {
+        let userId = req.session.id;
+        let username = req.session.username;
+        let email = req.session.email;
+        let targetId = req.params.targetId;
+        let message = req.body.message;
+
+        const query = pgClient.query(`INSERT INTO chats (sender_id, receiver_id, format, content, unread) 
+                              VALUES('${userId}', '${targetId}', 0, '${message}', true) RETURNING *;`,
+                function (err, result) {
+                        if (err) {
+                                return res.json({ status: 500, message: err.message });
+                        }
+                        var creationtime = result.rows[0].creationtime;
+
+                        // send socket message.
+                        var target = io.getUserSocket(targetId);
+                        if (target != null) {
+                                // user is online.
+                                var obj = new Array();
+                                obj.push({
+                                        id: userId,
+                                        email: email,
+                                        username: username,
+                                        content: message,
+                                        creationtime: creationtime
+                                });
+                                target.emit("MessageRecv", JSON.stringify(obj));
+                        }
+                        return res.json({ status: 200 });
+                });
+        query.on('end', () => { pgClient.emit(); });
+});
+
+// Fetch message history.
+router.get('/api/message/:offset?/:limit?/:senderId?', function (req, res, next) {
+        let userId = req.session.id;
+        let offset = req.query.offset;
+        let limit = req.query.limit;
+        let senderId = req.query.senderId;
+        const query = pgClient.query(`SELECT u.id, u.email, u.username, sent.content, sent.creationtime FROM 
+                                      (SELECT c.sender_id, c.content, c.creationtime FROM chats c
+                                        WHERE c.receiver_id = '${userId}' ` + (senderId != null ? " AND c.sender_id = " + senderId + " " : " ") + `
+                                        ORDER BY c.creationtime DESC
+                                        OFFSET '${offset}' LIMIT '${limit}') AS sent, trawall_users u 
+                                WHERE u.id = sent.sender_id
+                                ORDER BY sent.creationtime ASC;`,
+                function (err, result) {
+                        if (err)
+                                return res.json({ status: 500, message: err.message, userId: userId, senderId: senderId });
+
+                        if (result == null)
+                                return res.json(new Array());
+
+                        var messages = new Array();
+                        for (var i = 0; i < result.rowCount; i++)
+                                messages.push({
+                                        id: result.rows[i].id,
+                                        email: result.rows[i].email,
+                                        username: result.rows[i].username,
+                                        content: result.rows[i].content,
+                                        creationtime: result.rows[i].creationtime
+                                });
+                        return res.json(messages);
+                });
+        query.on('end', () => { pgClient.emit(); });
+});
 
 
 

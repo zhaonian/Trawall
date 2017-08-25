@@ -1,10 +1,38 @@
 ### Just a wall for sharing your travels with the world
 
-## Deployed here
-[http://auroracatcher.com:3000/trawall](http://auroracatcher.com:3000/trawall)
+Setup:
+- 
 
-## DB design draw.io
-[https://www.draw.io/?state=%7B%22ids%22:%5B%220BzSUKvnh_D9UUUJ5S21oZk5iOHM%22%5D,%22action%22:%22open%22,%22userId%22:%22112099626754795078417%22%7D#G0BzSUKvnh_D9UUUJ5S21oZk5iOHM](https://www.draw.io/?state=%7B%22ids%22:%5B%220BzSUKvnh_D9UUUJ5S21oZk5iOHM%22%5D,%22action%22:%22open%22,%22userId%22:%22112099626754795078417%22%7D#G0BzSUKvnh_D9UUUJ5S21oZk5iOHM)
 
-## Proposal
-[https://docs.google.com/document/d/1H8PTfP3UCuqn0fX-qTSPck7rFw348By2eyY5MN-Zizg/edit](https://docs.google.com/document/d/1H8PTfP3UCuqn0fX-qTSPck7rFw348By2eyY5MN-Zizg/edit)
+--------------------------------------------------------------------------------
+
+Functionalities:
+- User
+  - log in
+  - sign up
+  - reset password by sending a randomly generated link to the user's registered email
+  - update username
+
+- Post
+  - text/image/video post (socket)
+  - delete post (socket)
+  - like a post and the total count of likes will also show on the post
+  - posts are sorted by most recent to least rencent by default
+  - clicking on the tag on a post will bring all the posts with the same tag to the top
+
+- Message
+  - auto-complement to find a certain user by email
+  - direct message to a certain user (socket)
+  - can view the chat history
+
+
+
+
+--------------------------------------------------------------------------------
+
+
+
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------

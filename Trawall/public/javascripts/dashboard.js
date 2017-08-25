@@ -2,6 +2,39 @@ var socket = io();
 var userId = $('body').attr('id');
 var username = $('body').attr('username');
 
+
+socket.on("connect", function () {
+        socket.emit("connection_ii", userId);
+});
+
+function msg2string(msg) {
+        return msg.email + "(" + msg.username + ")" + "\n" + msg.content + "\nAt: " + msg.creationtime;
+}
+
+function notify(queue) {
+        if (!("Notification" in window)) {
+                alert("This browser does not support system notifications");
+        } else if (Notification.permission === "granted") {
+                for (var i = 0; i < queue.length; i++)
+                        new Notification(msg2string(queue[i]));
+        } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission(function (permission) {
+                        // If the user accepts, let's create a notification
+                        if (permission === "granted") {
+                                notify(queue);
+                        }
+                });
+        }
+}
+
+// setup messaging socket post connection.
+$(function () {
+        socket.on("MessageRecv", function (data) {
+                var msgs = JSON.parse(data);
+                notify(msgs);
+        });
+});
+
 // get all posts when load the page
 $(function () {
         $.ajax({
@@ -97,7 +130,7 @@ $(function () {
                         console.log(data);
                         for (let i = 0; i < data.likes.rows.length; i++) {
                                 $(`#${data.likes.rows[i].postid} .like-and-comment-row`).find('span').html(data.likes.rows[i].counter + " likes");
-                        }                
+                        }
                 }
         });
 });
@@ -297,18 +330,18 @@ $(function () {
                                 success: function (data) {
                                         $(`#${postId}`).find('.fa-heart').addClass('liked');
                                         let numberLikes = +($(`#${postId} .like-and-comment-row`).find('span').text().split(" ", 1));
-                                        $(`#${postId} .like-and-comment-row`).find('span').html((numberLikes+1) + " likes");
+                                        $(`#${postId} .like-and-comment-row`).find('span').html((numberLikes + 1) + " likes");
                                 }
                         });
-                // unlike a post 
-                } else {                       
+                        // unlike a post 
+                } else {
                         $.ajax({
                                 type: "POST",
                                 url: `/api/${userId}/unlike/${postId}`,
                                 success: function (data) {
                                         $(`#${postId}`).find('.fa-heart').removeClass('liked');
                                         let numberLikes = +($(`#${postId} .like-and-comment-row`).find('span').text().split(" ", 1));
-                                        $(`#${postId} .like-and-comment-row`).find('span').html((numberLikes-1) + " likes");
+                                        $(`#${postId} .like-and-comment-row`).find('span').html((numberLikes - 1) + " likes");
                                 }
                         });
                 }
@@ -405,4 +438,112 @@ $(function () {
                         }
                 });
         });
+});
+
+
+
+
+
+
+
+
+
+
+function setupMessageSender(userInfo) {
+        // message chat-box on-send
+        $('.modal-content').on('click', '#message-sent-btn', function () {
+                if (userInfo != null) {
+                        $.ajax({
+                                type: "POST",
+                                url: `/api/message/` + userInfo.id,
+                                contentType: "application/x-www-form-urlencoded",
+                                data: {
+                                        message: $('#modal-text-area').val()
+                                },
+                                success: function (data) {
+                                        $('#myModal').css({ "display": "none" });
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                        alert("Couldn't send your message: " + errorThrown);
+                                }
+                        });
+                }
+        });
+}
+
+function renderMessageHistory(history) {
+        $("#modal-history-area").html();
+        for (var i = 0; i < history.length; i++) {
+                var message = msg2string(history[i]);
+                $("#modal-history-area").append(message + "\n\n");
+        }
+}
+
+function pollHistory(userInfo) {
+        $.ajax({
+                type: "GET",
+                url: `/api/message?offset=0&limit=10&` + (userInfo != null ? "&senderId=" + userInfo.id : ""),
+                contentType: "application/x-www-form-urlencoded",
+                success: function (history) {
+                        console.log(history);
+                        renderMessageHistory(history);
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                }
+        });
+}
+
+
+
+
+
+
+
+
+
+
+// chat box
+$(function () {
+        // message chat-box
+        $(".navbar-right").on('click', '#messageBtn', function (e) {
+                $('.modal-content').html(`
+                        <div id="location-area"><textarea type='text' id='modal-target-email' placeholder='Whom to send'></textarea></div>
+                        <hr/>
+                        <div id="history"><textarea type='text' id='modal-history-area' placeholder='No history yet.'></textarea></div>
+                        <hr/>
+                        <div id="content"><textarea type='text' id='modal-text-area' placeholder='message...'></textarea></div>
+                        <hr/>
+                        <div id="post-btn-container"><button id='message-sent-btn' class='post-btn'>Send</button></div>
+                        `);
+                $('#myModal').css({ "display": "block" });
+                pollHistory(null);
+        });
+
+        // email on type.
+        $('.modal-content').on('keypress', '#modal-target-email', function (e) {
+                var keyword = $("#modal-target-email").val() + String.fromCharCode(e.keyCode);
+                $.ajax({
+                        type: "GET",
+                        url: "/api/user/search?email=" + keyword,
+                        contentType: "application/x-www-form-urlencoded",
+                        success: function (suggestions) {
+                                if (suggestions.length == 1) {
+                                        var userInfo = suggestions[0];
+                                        // Auto complete.
+                                        $("#modal-target-email").val(userInfo.email + " (" + userInfo.username + ")");
+                                        // Setup send button.
+                                        setupMessageSender(userInfo);
+                                        pollHistory(userInfo);
+                                } else {
+                                        setupMessageSender(null);
+                                }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert("User " + $('#modal-target-email').val() + " doesn't exist.");
+                        }
+                });
+        });
+
+
 });
