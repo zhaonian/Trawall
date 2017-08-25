@@ -11,6 +11,7 @@ var api = require('./routes/api');
 var login = require('./routes/login');
 var dashboard = require('./routes/dashboard');
 var passwordReset = require('./routes/passwordReset');
+var me = require('./routes/me');
 var error = require('./routes/error');
 
 var app = express();
@@ -43,6 +44,9 @@ app.use('/error', error);
 app.use('/login', login);
 app.use('/dashboard', dashboard);
 app.use('/passwordReset', passwordReset);
+app.use('/me', me);
+
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
         var err = new Error('Not Found');

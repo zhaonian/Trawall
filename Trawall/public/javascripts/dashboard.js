@@ -242,41 +242,21 @@ $(function () {
         });
 
 
-
-
-
-
-
-
-
-
-
         // show update profile dialogue
-        // TODO: add uploading profilePic option
-        $(".navbar-right").on('click', '#profileBtn', function (e) {
-                $('.modal-content').html(`
-                        <div id=‘update-username-area’><textarea type='text' id='modal-update-username' placeholder='Username'></textarea></div>
-                        <div id="post-btn-container"><button id='update-profile-btn' class='post-btn'>Update</button></div>
-                `);
-                $('#myModal').css({ "display": "block" });
-        });
+        // $(".navbar-right").on('click', '#profileBtn', function (e) {
+        //         $('.modal-content').html(`
+        //                 <div id=‘update-username-area’><textarea type='text' id='modal-update-username' placeholder='Username'></textarea></div>
+        //                 <div id="post-btn-container"><button id='update-profile-username-btn' class='post-btn'>Update name</button></div>
+        //                 <br><br><br>
+        //                 <form method="POST" action="/api/user/profilePic/update" enctype="multipart/form-data" >                        
+        //                         <input id='file-upload' type="file" name="profilePic">
+        //                         <div id="post-btn-container"><button id='update-profile-pic-btn' class='post-btn'>Update avatar</button></div>                        
+        //                 </form>
+        //         `);
+        //         $('#myModal').css({ "display": "block" });
+        // });
 
-        // click on update button for profile update
-        $('.modal-content').on('click', '#update-profile-btn', function () {
-                $.ajax({
-                        type: "POST",
-                        url: `/api/user/username/update`,
-                        contentType: "application/x-www-form-urlencoded",
-                        data: {
-                                id: $('body').attr('id'),
-                                username: $('#modal-update-username').val(),
-                        },
-                        success: function (data) {
-                                $('#myModal').hide();
-                                $('body').attr('username', data.username);
-                        }
-                });
-        });
+
 
         // close the modal
         $('#myModal').on('click', function (e) {

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+        <title>
+                Me | Trawall
+        </title>
+        <link rel='stylesheet' href='/stylesheets/me.css' />        
+        <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body id=<%= id %> username=<%= username %>>
+        <div id=‘update-username-area’><textarea type='text' id='modal-update-username' placeholder='Username'></textarea></div>
+        <div id="post-btn-container"><button id='update-profile-username-btn' class='post-btn'>Update name</button></div>
+        <br><br><br>
+        <form method="POST" action="/api/user/profilePic/update" enctype="multipart/form-data" >                        
+                <input id='file-upload' type="file" name="profilePic">
+                <div id="post-btn-container"><button id='update-profile-pic-btn' class='post-btn'>Update avatar</button></div>                        
+        </form>
+
+
+        <!-- Scripts -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="/javascripts/me.js"></script>        
+</body>
+
+</html>

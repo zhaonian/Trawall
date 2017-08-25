@@ -154,6 +154,53 @@ router.post('/api/user/username/update', function (req, res, next) {
         });
 });
 
+// update profile pic
+// profile pic upload setup
+var profilePicStorage = multer.diskStorage({
+        destination: function (req, file, cb) {
+                cb(null, 'public/images/avatars/')
+        },
+        filename: function (req, file, cb) {
+                cb(null, file.fieldname + '.jpeg')
+        }
+});
+
+var uploadProfilePic = multer({ storage: profilePicStorage }).single('profilePic');
+
+// profile pic
+router.post('/api/user/profilePic/update', function (req, res, next) {
+        uploadProfilePic(req, res, function (err) {
+                if (err) {
+                        return res.render('error', {message: "upload failed " + err });
+                }
+                console.log('file upload success');
+
+                let filePath = req.file.path.substring(7);
+                let id = req.body.id;
+                pg.connect(connectionString, function (err, client, done) {
+                        if (err) {
+                                res.render('error', { message: "Database Exception" });
+                        }
+                        client.query(`UPDATE Trawall_Users SET profilePic = '${filePath}' WHERE id = '${id}';`, function (err, result) {
+                                if (err) {
+                                        return res.render('error', { message: "Database Exception " + err });
+                                }
+                                return res.json({profilePic: filePath});
+                        });
+                        done();
+                });
+        });
+});
+
+
+
+
+
+
+
+
+
+
 
 // Post API
 // get posts with pagination
@@ -268,7 +315,7 @@ router.post('/api/:userId/unlike/:postId', function (req, res, next) {
 // upload files setup (image and video)
 var imageStorage = multer.diskStorage({
         destination: function (req, file, cb) {
-                cb(null, 'public/images/avatars/')
+                cb(null, 'public/images/posts/')
         },
         filename: function (req, file, cb) {
                 cb(null, file.fieldname + '.jpeg')

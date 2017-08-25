@@ -1,0 +1,22 @@
+body {
+        background-image: url("../images/login.png");
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center; 
+        background-size: cover;
+}
+
+/* The Post Button */
+.post-btn {
+        background: rgb(92, 184, 92);
+        color: white;
+        font-size: 20px;
+        border: none;
+        border-radius: 5px;
+        padding: 3px 12px 3px 12px;
+        float: right;
+}
+
+.post-btn:focus {
+        outline: none;
+}
