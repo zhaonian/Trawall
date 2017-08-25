@@ -67,7 +67,7 @@ router.post('/api/user/register', function (req, res, next) {
                         req.session.id = uuid;
                         req.session.username = username;
                         req.session.email = email;
-                        return res.redirect('/dashboard')
+                        return res.redirect('/dashboard');
                 });
                 done();
         });
@@ -310,6 +310,43 @@ router.post('/api/:userId/unlike/:postId', function (req, res, next) {
                 done();
         });
 });
+
+// get all the likes of the current user
+router.get('/api/like/:userId', function(req, res, next) {
+        let userId = req.params.userId;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        res.render('error', { message: "Database Exception " + err });
+                }
+                client.query(`SELECT postId FROM Likes WHERE userId = '${userId}';`, function (err, result) {
+                        if (err) {
+                                return res.render('error', { message: "Database Exception " + err });
+                        }
+                        return res.json({ likedPosts: result });
+                });
+                done();
+        });
+});
+
+// get total number of likes of a post
+router.get('/api/number/like', function(req, res, next) {
+        // let postId = req.params.postId;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        res.render('error', { message: "Database Exception " + err });
+                }
+                client.query(`SELECT COUNT(userId) AS counter, postId FROM Likes GROUP BY postId;`, function (err, result) {
+                        if (err) {
+                                return res.render('error', { message: "Database Exception " + err });
+                        }
+                        return res.json({ 
+                                likes: result
+                        });
+                });
+                done();
+        });
+});
+
 
 
 // upload files setup (image and video)

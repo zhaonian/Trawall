@@ -23,9 +23,8 @@ $(function () {
                                                                 <div class="post-content">${data.posts.rows[i].content}</div>
                                                                 <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[i].tags}</span></div>
                                                                 <div class="like-and-comment-row">
-                                                                        <span class="number-likes">46 likes</span>
+                                                                        <span class="number-likes">0 likes</span>
                                                                         <i class="fa fa-heart" aria-hidden="true"></i>
-                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                                                 </div>
                                                         </div>
                                                 </div>
@@ -44,9 +43,8 @@ $(function () {
                                                                 <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[i].tags}</span></div>
                                                                 <img class="post-img" src='${data.posts.rows[i].filepath}' />
                                                                 <div class="like-and-comment-row">
-                                                                        <span class="number-likes">46 likes</span>
+                                                                        <span class="number-likes">0 likes</span>
                                                                         <i class="fa fa-heart" aria-hidden="true"></i>
-                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                                                 </div>
                                                         </div>
                                                 </div>
@@ -68,15 +66,36 @@ $(function () {
                                                                         <source src="${data.posts.rows[i].filepath}" type="video/mp4">
                                                                 </video>
                                                                 <div class="like-and-comment-row">
-                                                                        <span class="number-likes">46 likes</span>
+                                                                        <span class="number-likes">0 likes</span>
                                                                         <i class="fa fa-heart" aria-hidden="true"></i>
-                                                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                                                 </div>
                                                         </div>
                                                 </div>
                                         `);
                                 }
                         }
+                }
+        });
+
+        // get all the likes
+        $.ajax({
+                type: "GET",
+                url: `/api/like/${userId}`,
+                success: function (data) {
+                        for (let i = 0; i < data.likedPosts.rows.length; i++) {
+                                $(`#${data.likedPosts.rows[i].postid} .like-and-comment-row`).find('i').addClass('liked');
+                        }
+                }
+        });
+
+        // get number of likes
+        $.ajax({
+                type: "GET",
+                url: `/api/number/like`,
+                success: function (data) {
+                        for (let i = 0; i < data.likes.rows.length; i++) {
+                                $(`#${data.likes.rows[i].postid} .like-and-comment-row`).find('span').html(data.likes.rows[i].counter + " likes");
+                        }                
                 }
         });
 });
@@ -281,23 +300,28 @@ $(function () {
 
 // user likes/unlikes a post
 $(function () {
-        // like a post
         $('#posts-list').on('click', '.fa-heart', function (e) {
                 let postId = e.target.parentNode.parentNode.getAttribute('id');
+                // like a post
                 if (!$(`#${postId}`).find('.fa-heart').hasClass('liked')) {
                         $.ajax({
                                 type: "POST",
                                 url: `/api/${userId}/like/${postId}`,
                                 success: function (data) {
                                         $(`#${postId}`).find('.fa-heart').addClass('liked');
+                                        let numberLikes = +($(`#${postId} .like-and-comment-row`).find('span').text().split(" ", 1));
+                                        $(`#${postId} .like-and-comment-row`).find('span').html((numberLikes+1) + " likes");
                                 }
                         });
-                } else {
+                // unlike a post 
+                } else {                       
                         $.ajax({
                                 type: "POST",
                                 url: `/api/${userId}/unlike/${postId}`,
                                 success: function (data) {
                                         $(`#${postId}`).find('.fa-heart').removeClass('liked');
+                                        let numberLikes = +($(`#${postId} .like-and-comment-row`).find('span').text().split(" ", 1));
+                                        $(`#${postId} .like-and-comment-row`).find('span').html((numberLikes-1) + " likes");
                                 }
                         });
                 }
@@ -320,9 +344,8 @@ socket.on('NewPost', function (data) {
                                 <div class="post-content">${data.rows[0].content}</div>
                                 <div class="post-tags"><span class='post-tags-text'>#${data.rows[0].tags}</span></div>
                                 <div class="like-and-comment-row">
-                                        <span class="number-likes">46 likes</span>
+                                        <span class="number-likes">0 likes</span>
                                         <i class="fa fa-heart" aria-hidden="true"></i>
-                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                 </div>
                         </div>
                 </div>
@@ -348,9 +371,8 @@ socket.on('NewImgPost', function (data) {
                                 <div class="post-tags"><span class='post-tags-text'>#${data.posts.rows[0].tags}</span></div>
                                 <img class="post-img" src='${data.rows[0].filepath}' />
                                 <div class="like-and-comment-row">
-                                        <span class="number-likes">46 likes</span>
+                                        <span class="number-likes">0 likes</span>
                                         <i class="fa fa-heart" aria-hidden="true"></i>
-                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                 </div>
                         </div>
                 </div>
@@ -375,9 +397,8 @@ socket.on('NewVidPost', function (data) {
                                         <source src="${data.rows[0].filepath}" type="video/mp4">
                                 </video>
                                 <div class="like-and-comment-row">
-                                        <span class="number-likes">46 likes</span>
+                                        <span class="number-likes">0 likes</span>
                                         <i class="fa fa-heart" aria-hidden="true"></i>
-                                        <i class="fa fa-comment" aria-hidden="true"></i>
                                 </div>
                         </div>
                 </div>
