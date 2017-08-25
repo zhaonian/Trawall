@@ -1,7 +1,7 @@
 ### Just a wall for sharing your travels with the world
 
 Deployed here:
-[auroracatcher.com/trawall](auroracatcher.com:3000/login)
+[http://auroracatcher.com/trawall](http://auroracatcher.com:3000/login)
 
 
 Setup:
