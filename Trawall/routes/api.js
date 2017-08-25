@@ -9,7 +9,6 @@ const io = require('../socketio');
 const authCheck = require('../authCheck');
 
 var router = express.Router();
-// var message_queues = new Map();
 
 
 const connectionString = process.env.DATABASE_URL || "postgres://luan:postgresql-luan@localhost/trawall"; // explicitely put pw here?

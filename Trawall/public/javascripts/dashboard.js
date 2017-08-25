@@ -6,7 +6,7 @@ var username = $('body').attr('username');
 $(function () {
         $.ajax({
                 type: "GET",
-                url: `/api/post/0/10`,
+                url: `/api/post`,
                 contentType: "application/x-www-form-urlencoded",
                 success: function (data) {
                         let size = data.posts ? data.posts.rows.length : 0;
@@ -94,6 +94,7 @@ $(function () {
                 type: "GET",
                 url: `/api/number/like`,
                 success: function (data) {
+                        console.log(data);
                         for (let i = 0; i < data.likes.rows.length; i++) {
                                 $(`#${data.likes.rows[i].postid} .like-and-comment-row`).find('span').html(data.likes.rows[i].counter + " likes");
                         }                
@@ -260,21 +261,6 @@ $(function () {
                         </div>`
                 );
         });
-
-
-        // show update profile dialogue
-        // $(".navbar-right").on('click', '#profileBtn', function (e) {
-        //         $('.modal-content').html(`
-        //                 <div id=‘update-username-area’><textarea type='text' id='modal-update-username' placeholder='Username'></textarea></div>
-        //                 <div id="post-btn-container"><button id='update-profile-username-btn' class='post-btn'>Update name</button></div>
-        //                 <br><br><br>
-        //                 <form method="POST" action="/api/user/profilePic/update" enctype="multipart/form-data" >                        
-        //                         <input id='file-upload' type="file" name="profilePic">
-        //                         <div id="post-btn-container"><button id='update-profile-pic-btn' class='post-btn'>Update avatar</button></div>                        
-        //                 </form>
-        //         `);
-        //         $('#myModal').css({ "display": "block" });
-        // });
 
 
 
