@@ -165,7 +165,6 @@ router.post('/api/user/resetPassword', function (req, res, next) {
 router.post('/api/user/username/update', function (req, res, next) {
         let id = req.body.id;
         let username = req.body.username;
-        console.log(username, "  -  ", id);
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
                         return res.render('error', { message: "Database Exception" });
@@ -271,7 +270,7 @@ router.post('/api/new/post', function (req, res, next) {
                 }
                 client.query(`INSERT INTO Posts VALUES('${id}', '${username}', ${format}, '${content}', '${location}', '${tags}', null)  RETURNING *;`, function (err, result) {
                         if (err) {
-                                return res.render('error', { message: "Database Exception" });
+                                return res.render('error', { message: "Database Exception " + err.message });
                         }
                         return io.getInstance().emit('NewPost', result);
                         // return res.json({ post: result });
@@ -309,7 +308,7 @@ router.post('/api/:userId/like/:postId', function (req, res, next) {
                 if (err) {
                         res.render('error', { message: "Database Exception" });
                 }
-                client.query(`INSERT INTO Likes VALUES('${userId}', '${postId}');`, function (err, result) {
+                client.query(`INSERT INTO likes VALUES('${userId}', '${postId}');`, function (err, result) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception" });
                         }

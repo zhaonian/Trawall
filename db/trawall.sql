@@ -23,15 +23,14 @@ CREATE UNIQUE INDEX trawall_users_id_uindex ON trawall_users (email);
 CREATE TABLE posts
 (
     postid          varchar(36),
-	userid          varchar(36) NOT NULL,
+	username          varchar(36) NOT NULL,
 	format          INTEGER NOT NULL,
 	content         TEXT,
 	location        TEXT,
 	tags            VARCHAR(16),
 	filepath        VARCHAR(64),
 	creationtime    TIMESTAMP default now(),
-	PRIMARY KEY (userid, postid),
-	FOREIGN KEY (userid) REFERENCES trawall_users (id) ON DELETE CASCADE
+	PRIMARY KEY (postid)
 );
 
 CREATE INDEX posts_creationtime_index ON posts (creationtime);
@@ -41,7 +40,7 @@ CREATE TABLE likes
 	userid          varchar(36) NOT NULL,
 	postid          varchar(36) NOT NULL,
 	PRIMARY KEY (userid, postid),
-	FOREIGN KEY (userid, postid) REFERENCES posts (userid, postid) ON DELETE CASCADE
+	FOREIGN KEY (postid) REFERENCES posts (postid) ON DELETE CASCADE
 );
 
 
