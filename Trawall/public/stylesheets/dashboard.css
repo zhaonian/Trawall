@@ -86,6 +86,7 @@ body .my-nav-bar {
 
 .post-tags {
         padding-bottom: 15px;
+        padding-right: 0;
         font-size: 13px;
         color: rgb(143, 143, 143);
 }
@@ -246,15 +247,7 @@ body .my-nav-bar {
         color: #4dd2ff;
 }
 
-
-/* file upload button */
-#file-upload[type=file] {
+.post-tags-text:hover {
+        color: #4dd2ff;
         cursor: pointer;
-        padding: 10px;
 }
-
-/* 
-#tags-list {
-        position: relative;
-        float: right;
-} */

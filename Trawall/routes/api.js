@@ -171,7 +171,7 @@ var uploadProfilePic = multer({ storage: profilePicStorage }).single('profilePic
 router.post('/api/user/profilePic/update', function (req, res, next) {
         uploadProfilePic(req, res, function (err) {
                 if (err) {
-                        return res.render('error', {message: "upload failed " + err });
+                        return res.render('error', { message: "upload failed " + err });
                 }
                 console.log('file upload success');
 
@@ -185,7 +185,7 @@ router.post('/api/user/profilePic/update', function (req, res, next) {
                                 if (err) {
                                         return res.render('error', { message: "Database Exception " + err });
                                 }
-                                return res.json({profilePic: filePath});
+                                return res.json({ profilePic: filePath });
                         });
                         done();
                 });
@@ -205,8 +205,8 @@ router.post('/api/user/profilePic/update', function (req, res, next) {
 // Post API
 // get posts with pagination
 router.get('/api/post/:offset?/:limit?', function (req, res, next) {
-        var offset = req.params.offset;
-        var limit = req.params.limit;
+        let offset = req.params.offset;
+        let limit = req.params.limit;
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
                         return res.render('error', { message: "Database Exception" });
@@ -232,7 +232,7 @@ router.get('/api/post/:offset?/:limit?', function (req, res, next) {
 
 
 // new post
-router.post('/api/post/new', function (req, res, next) {
+router.post('/api/new/post', function (req, res, next) {
         let id = uuidv1();
         let username = req.body.username;
         let format = 1;
@@ -256,7 +256,7 @@ router.post('/api/post/new', function (req, res, next) {
 
 
 // delete a post
-router.delete('/api/post/delete/:postId', function (req, res, next) {
+router.delete('/api/delete/post/:postId', function (req, res, next) {
         let postId = req.params.postId;
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
@@ -335,10 +335,10 @@ var uploadImage = multer({ storage: imageStorage }).single('imagePost');
 var uploadVideo = multer({ storage: videoStorage }).single('videoPost');
 
 // image
-router.post('/api/post/imgPost', function (req, res, next) {
+router.post('/api/imgPost', function (req, res, next) {
         uploadImage(req, res, function (err) {
                 if (err) {
-                        return res.render('error', {message: "upload failed"});
+                        return res.render('error', { message: "upload failed" });
                 }
                 console.log('file upload success');
 
@@ -365,10 +365,10 @@ router.post('/api/post/imgPost', function (req, res, next) {
 });
 
 // video
-router.post('/api/post/vidPost', function (req, res, next) {
+router.post('/api/vidPost', function (req, res, next) {
         uploadVideo(req, res, function (err) {
                 if (err) {
-                        return res.render('error', {message: "upload failed"});
+                        return res.render('error', { message: "upload failed" });
                 }
                 console.log('file upload success');
 
@@ -394,6 +394,21 @@ router.post('/api/post/vidPost', function (req, res, next) {
         });
 });
 
+router.get('/api/tag/:tags', function (req, res, next) {
+        let tags = req.params.tags;
+        pg.connect(connectionString, function (err, client, done) {
+                if (err) {
+                        return res.render('error', { message: "Database Exception " + err });
+                }
+                client.query(`SELECT * FROM posts WHERE tags = '${tags}' ORDER BY creationTime DESC;`, function (err, result) {
+                        if (err) {
+                                return res.render('error', { message: "Database Exception " + err });
+                        }
+                        return res.json({ posts: result });
+                });
+                done();
+        });
+});
 
 
 
@@ -403,57 +418,6 @@ router.post('/api/post/vidPost', function (req, res, next) {
 
 
 
-
-
-// // chat-box
-// router.post('/api/:userEmail/message/:targetEmail', function (req, res, next) {
-//         let userEmail = req.params.userEmail;
-//         let targetEmail = req.params.targetEmail;
-//         let message = req.body.message;
-//         pg.connect(connectionString, function (err, client, done) {
-//                 if (err) {
-//                         res.render('error', { message: "Database Exception" });
-//                 }
-//                 client.query(`SELECT id FROM Trawall_Users WHERE email = '${targetEmail}';`, function (err, result) {
-//                         if (err) {
-//                                 return res.render('error', { message: "Database Exception" });
-//                         }
-//                         if (result.rows.length > 0) {
-//                                 // deliver the message.
-//                                 let targetId = result.rows[0].id;
-//                                 var queue = message_queues.get(targetId);
-//                                 if (queue == null) {
-//                                         queue = new Array();
-//                                         message_queues.set(targetId, queue);
-//                                 }
-//                                 queue.push(userEmail + ": " + message);
-//                                 return res.json({status: 200});
-//                         } else {
-//                                 // user not found.
-//                                 return res.json({status: 404});
-//                         }
-//                 });
-//                 done();
-//         });
-// });
-
-// router.get('/api/:userId/message', function (req, res, next) {
-//         let userId = req.params.userId;
-//         var queue = message_queues.get(userId);
-//         if (queue == null || queue.length == 0) {
-//                 return res.json({
-//                         status: 200,
-//                         messages: []
-//                 });
-//         } else {
-//                 var json = res.json({
-//                         status: 200, 
-//                         messages: queue
-//                 });
-//                 message_queues.set(userId, []);
-//                 return json;
-//         }
-// });
 
 
 module.exports = router;
