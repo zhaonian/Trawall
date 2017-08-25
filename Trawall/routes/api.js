@@ -50,7 +50,7 @@ router.post('/api/user/register', function (req, res, next) {
                 if (err) {
                         return res.render('error', { message: "Database Exception " + err });
                 }
-                client.query(`SELECT FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
+                client.query(`SELECT * FROM Trawall_Users WHERE email = '${email}';`, function (err, result) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception " + err });
                         }
@@ -60,11 +60,13 @@ router.post('/api/user/register', function (req, res, next) {
                 });
                 let uuid = uuidv1();
                 let hash = bcrypt.hashSync(req.body.password, 10);
-                client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', '${username}', null, null);`, function (err, result) {
+                client.query(`INSERT INTO Trawall_Users VALUES('${uuid}', '${email}', '${hash}', '${username}', null, null) RETURNING *;`, function (err, result) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception " + err });
                         }
                         req.session.id = uuid;
+                        req.session.username = username;
+                        req.session.email = email;
                         return res.redirect('/dashboard')
                 });
                 done();
@@ -146,7 +148,7 @@ router.post('/api/user/username/update', function (req, res, next) {
                         if (err) {
                                 return res.render('error', { message: "Database Exception" });
                         }
-                        return res.json({ status: 200 });
+                        return res.json({ username: username });
                 });
                 done();
         });

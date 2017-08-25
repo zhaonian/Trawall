@@ -185,7 +185,7 @@ $(function () {
                         url: `/api/post/new`,
                         contentType: "application/x-www-form-urlencoded",
                         data: {
-                                username: username,
+                                username: $('body').attr('username'),
                                 content: $('#modal-text-area').val(),
                                 location: $('#modal-location-area').val(),
                                 tags: $('#modal-tag-area').val()
@@ -273,6 +273,7 @@ $(function () {
                         },
                         success: function (data) {
                                 $('#myModal').hide();
+                                $('body').attr('username', data.username);
                         }
                 });
         });
