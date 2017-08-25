@@ -6,6 +6,7 @@ const uuidv1 = require('uuid/v1');
 const nodemailer = require('nodemailer');
 const multer = require('multer');
 const io = require('../socketio');
+const authCheck = require('../authCheck');
 
 var router = express.Router();
 // var message_queues = new Map();
@@ -204,7 +205,7 @@ router.post('/api/user/profilePic/update', function (req, res, next) {
 
 // Post API
 // get posts with pagination
-router.get('/api/post/:offset?/:limit?', function (req, res, next) {
+router.get('/api/post/:offset?/:limit?', authCheck, function (req, res, next) {
         let offset = req.params.offset;
         let limit = req.params.limit;
         pg.connect(connectionString, function (err, client, done) {
@@ -330,7 +331,6 @@ router.get('/api/like/:userId', function(req, res, next) {
 
 // get total number of likes of a post
 router.get('/api/number/like', function(req, res, next) {
-        // let postId = req.params.postId;
         pg.connect(connectionString, function (err, client, done) {
                 if (err) {
                         res.render('error', { message: "Database Exception " + err });

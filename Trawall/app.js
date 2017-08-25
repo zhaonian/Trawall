@@ -13,6 +13,7 @@ var dashboard = require('./routes/dashboard');
 var passwordReset = require('./routes/passwordReset');
 var me = require('./routes/me');
 var error = require('./routes/error');
+var authCheck = require('./authCheck');
 
 var app = express();
 
@@ -39,6 +40,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(authCheck);
 app.use('/', api);
 app.use('/error', error);
 app.use('/login', login);
